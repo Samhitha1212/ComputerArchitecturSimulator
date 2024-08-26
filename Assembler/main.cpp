@@ -8,7 +8,7 @@ using namespace std;
 
 int main() {
 
-  ifstream inputfile("input.txt");
+  ifstream inputfile("input.s");
   string s;
   if (inputfile.is_open()) {
 
