@@ -17,7 +17,7 @@ public:
 class RType : public Instruction {
 private:
   string rs1, rs2, rd;
-  string op;
+  string op;               // Here op means operatio(e.g. add)
   bitset<32> Instruction;
   string hexCode;
 
