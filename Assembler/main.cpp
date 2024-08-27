@@ -9,40 +9,49 @@
 using namespace std;
 
 extern map<string, InstructionDetails> Details;
+map<string, int> Labels;
 
-int convertToInt(string s){
-  if(s[0]==0 && s[1]=='x'){
-    //In hexadecimal for
-    return 0;
-  }else{
+int convertToInt(string s) {
+  if (s[0] == '0' && s[1] == 'x') {
+    return stoi(s, 0, 16);
+  } else {
     return stoi(s);
   }
 }
 
-string seperateImmediate(string &s){
-  string num="";
-          int k=0;
-          for (; k<s.length(); k++){
-            if(s[k] != '('){
-              num+=s[k];
-            }else{
-              break;
-            }
-          }
-          
-          k++;
-          string rs1="";
-          for(; k<s.length(); k++){
-            if(s[k] != ')'){
-              rs1+=s[k];
-            }else{
-              break;
-            }
-          }
-          s=rs1;
-          return num;
+string seperateImmediate(string &s) {
+  string num = "";
+  int k = 0;
+  for (; k < s.length(); k++) {
+    if (s[k] != '(') {
+      num += s[k];
+    } else {
+      break;
+    }
+  }
 
+  k++;
+  string rs1 = "";
+  for (; k < s.length(); k++) {
+    if (s[k] != ')') {
+      rs1 += s[k];
+    } else {
+      break;
+    }
+  }
+  s = rs1;
+  return num;
 }
+
+bool IsValidImmediate(string s) { return true; }
+
+bool IsValidLabel(string s) {
+  auto it = Labels.find(s);
+  if (it != Labels.end())
+    return true;
+  return false;
+}
+
 int main() {
 
   ifstream inputfile("input.s");
@@ -50,7 +59,7 @@ int main() {
   if (inputfile.is_open()) {
 
     int instructions = 0;
-    map<string, int> Labels;
+
     string arg[N][4];
 
     while (inputfile.good()) {
@@ -105,59 +114,112 @@ int main() {
 
       cout << Details[arg[j][0]].FMT << endl;
 
-      if (Details[arg[j][0]].FMT == 'R') {
-        RType I(arg[j][0], arg[j][1], arg[j][2], arg[j][3]);
-
-      }
-
-      else if (Details[arg[j][0]].FMT == 'I') {
-
-        if(Details[arg[j][0]].opcode == bitset<7>("0010011")){
-          int n = convertToInt(arg[j][3]);
-
-          IType I(arg[j][0],arg[j][1],arg[j][2],n);
-
-        }else if(Details[arg[j][0]].opcode == bitset<7>("0000011")){
-         string num=seperateImmediate(arg[j][2]);
-         int n=convertToInt(num);
-          IType I(arg[j][0],arg[j][1],arg[j][2],n);
-        }else if(Details[arg[j][0]].opcode == bitset<7>("1100111")){
+      if (!IsValidOperation(arg[j][0])) {
+        cout << "ERROR:Invalid Operation at Operation Number:" << j << endl;
+        continue; // break??
+      } else if (!(IsValidRegeister(arg[j][1]))) {
+        cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+        continue;
+      } else {
+        if (Details[arg[j][0]].FMT == 'R') {
+          if (!(IsValidRegeister(arg[j][2]) && IsValidRegeister(arg[j][3]))) {
+            cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+            continue;
+          }
+          RType I(arg[j][0], arg[j][1], arg[j][2], arg[j][3]);
 
         }
 
-      }
+        else if (Details[arg[j][0]].FMT == 'I') {
 
-      else if (Details[arg[j][0]].FMT == 'S') {
-        string num=seperateImmediate(arg[j][2]);
-         int n=convertToInt(num);
-          SType I(arg[j][0],arg[j][1],arg[j][2],n);
+          if (Details[arg[j][0]].opcode == bitset<7>("0010011")) {
 
-      }
+            if (!IsValidImmediate(arg[j][3])) {
+              cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
+                   << endl;
+              continue;
+            }
+            int n = convertToInt(arg[j][3]);
 
-      else if (Details[arg[j][0]].FMT == 'B') {
+            IType I(arg[j][0], arg[j][1], arg[j][2], n);
 
-        int n= Labels[arg[j][3]];
-        n=j-n;
-        n*=4;
+          } else if (Details[arg[j][0]].opcode == bitset<7>("0000011") ||
+                     Details[arg[j][0]].opcode == bitset<7>("1100111")) {
+            string num = seperateImmediate(arg[j][2]);
+            if (!IsValidImmediate(arg[j][3])) {
+              cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
+                   << endl;
+              continue;
+            }
+            int n = convertToInt(num);
+            IType I(arg[j][0], arg[j][1], arg[j][2], n);
+          }
 
-        BType I(arg[j][0],arg[j][1], arg[j][1],n);
+          if (!(IsValidRegeister(arg[j][2]))) {
+            cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+            continue;
+          }
 
-      }
+        }
 
-      else if (Details[arg[j][0]].FMT == 'U') {
+        else if (Details[arg[j][0]].FMT == 'S') {
+          string num = seperateImmediate(arg[j][2]);
+          if (!IsValidImmediate(arg[j][3])) {
+            cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
+                 << endl;
+            continue;
+          }
+          int n = convertToInt(num);
+          if (!(IsValidRegeister(arg[j][2]))) {
+            cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+            continue;
+          }
+          SType I(arg[j][0], arg[j][1], arg[j][2], n);
 
-        int n=convertToInt(arg[j][2]);
-        UType I(arg[j][0], arg[j][1],n);
+        }
 
-      }
+        else if (Details[arg[j][0]].FMT == 'B') {
+          if (!IsValidLabel(arg[j][3])) {
+            cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
+                 << endl;
+            continue;
+          }
+          int n = Labels[arg[j][3]];
+          n = j - n;
+          n *= 4;
+          if (!(IsValidRegeister(arg[j][2]))) {
+            cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+            continue;
+          }
 
-      else if (Details[arg[j][0]].FMT == 'J') {
-        int n= Labels[arg[j][2]];
-        n=j-n;
-        n*=4;
+          BType I(arg[j][0], arg[j][1], arg[j][2], n);
 
-        JType I(arg[j][0], arg[j][1],n);
+        }
 
+        else if (Details[arg[j][0]].FMT == 'U') {
+          if (!IsValidImmediate(arg[j][2])) {
+            cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
+                 << endl;
+            continue;
+          }
+          int n = convertToInt(arg[j][2]);
+
+          UType I(arg[j][0], arg[j][1], n);
+
+        }
+
+        else if (Details[arg[j][0]].FMT == 'J') {
+          if (!IsValidLabel(arg[j][2])) {
+            cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
+                 << endl;
+            continue;
+          }
+          int n = Labels[arg[j][2]];
+          n = j - n;
+          n *= 4;
+
+          JType I(arg[j][0], arg[j][1], n);
+        }
       }
 
       // cout << "Instruction" << j << endl;

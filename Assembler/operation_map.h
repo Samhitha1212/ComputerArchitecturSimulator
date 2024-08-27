@@ -143,3 +143,18 @@ map<string, char> hexDigit = {
     {"1100", 'c'}, {"1101", 'd'}, {"1110", 'e'}, {"1111", 'f'},
 
 };
+
+
+bool IsValidRegeister(string s){
+    auto it= regDetails.find(s);
+    if(it != regDetails.end())
+    return true;
+    return false;
+}
+
+bool IsValidOperation(string s){
+    auto it= Details.find(s);
+    if(it != Details.end())
+    return true;
+    return false;
+}
