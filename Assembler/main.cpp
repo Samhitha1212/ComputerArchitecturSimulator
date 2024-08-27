@@ -1,3 +1,5 @@
+#include "FMT.h"
+#include "operation_map.h"
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -6,6 +8,41 @@
 
 using namespace std;
 
+extern map<string, InstructionDetails> Details;
+
+int convertToInt(string s){
+  if(s[0]==0 && s[1]=='x'){
+    //In hexadecimal for
+    return 0;
+  }else{
+    return stoi(s);
+  }
+}
+
+string seperateImmediate(string &s){
+  string num="";
+          int k=0;
+          for (; k<s.length(); k++){
+            if(s[k] != '('){
+              num+=s[k];
+            }else{
+              break;
+            }
+          }
+          
+          k++;
+          string rs1="";
+          for(; k<s.length(); k++){
+            if(s[k] != ')'){
+              rs1+=s[k];
+            }else{
+              break;
+            }
+          }
+          s=rs1;
+          return num;
+
+}
 int main() {
 
   ifstream inputfile("input.s");
@@ -58,15 +95,75 @@ int main() {
         }
       }
     }
-    cout << Labels.size() << endl;
+
+    cout << "No: of Labels" << Labels.size() << endl;
     for (auto it = Labels.begin(); it != Labels.end(); it++) {
       cout << it->first << " :" << it->second << endl;
     }
+
     for (int j = 0; j < instructions; j++) {
-      cout << "Instruction" << j << endl;
-      for (int i = 0; i < 4; i++) {
-        cout << arg[j][i] << endl;
+
+      cout << Details[arg[j][0]].FMT << endl;
+
+      if (Details[arg[j][0]].FMT == 'R') {
+        RType I(arg[j][0], arg[j][1], arg[j][2], arg[j][3]);
+
       }
+
+      else if (Details[arg[j][0]].FMT == 'I') {
+
+        if(Details[arg[j][0]].opcode == bitset<7>("0010011")){
+          int n = convertToInt(arg[j][3]);
+
+          IType I(arg[j][0],arg[j][1],arg[j][2],n);
+
+        }else if(Details[arg[j][0]].opcode == bitset<7>("0000011")){
+         string num=seperateImmediate(arg[j][2]);
+         int n=convertToInt(num);
+          IType I(arg[j][0],arg[j][1],arg[j][2],n);
+        }else if(Details[arg[j][0]].opcode == bitset<7>("1100111")){
+
+        }
+
+      }
+
+      else if (Details[arg[j][0]].FMT == 'S') {
+        string num=seperateImmediate(arg[j][2]);
+         int n=convertToInt(num);
+          SType I(arg[j][0],arg[j][1],arg[j][2],n);
+
+      }
+
+      else if (Details[arg[j][0]].FMT == 'B') {
+
+        int n= Labels[arg[j][3]];
+        n=j-n;
+        n*=4;
+
+        BType I(arg[j][0],arg[j][1], arg[j][1],n);
+
+      }
+
+      else if (Details[arg[j][0]].FMT == 'U') {
+
+        int n=convertToInt(arg[j][2]);
+        UType I(arg[j][0], arg[j][1],n);
+
+      }
+
+      else if (Details[arg[j][0]].FMT == 'J') {
+        int n= Labels[arg[j][2]];
+        n=j-n;
+        n*=4;
+
+        JType I(arg[j][0], arg[j][1],n);
+
+      }
+
+      // cout << "Instruction" << j << endl;
+      // for (int i = 0; i < 4; i++) {
+      //   cout << arg[j][i] << endl;
+      // }
     }
 
   } else {
