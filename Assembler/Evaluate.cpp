@@ -4,41 +4,47 @@
 #include "operation_map.h"
 using namespace std;
 
-void arrangeopcode(bitset<32> & Instruction ,bitset<7>  a){
+
+
+void InstructionInterface:: arrangeopcode(bitset<32> & Instruction ,bitset<7>  a){
   for (int i=6; i >= 0; i--){
     Instruction[i]=a[i];
   }
 }
-void arrangefunct3(bitset<32> & Instruction ,bitset<3>  a){
+
+void InstructionInterface:: arrangefunct3(bitset<32> & Instruction ,bitset<3>  a){
   for (int i=2, j=14 ; i >= 0; i--, j--){
     Instruction[j]=a[i];
   }
 }
-void arrangefunct7(bitset<32> & Instruction ,bitset<7>  a){
+
+void InstructionInterface:: arrangefunct7(bitset<32> & Instruction ,bitset<7>  a){
   for (int i=6, j=31 ; i >= 0; i--,j--){
     Instruction[j]=a[i];
   }
 }
 
-void arrangeregister(bitset<32> & Instruction ,bitset<5> a, int j){
+void InstructionInterface:: arrangeregister(bitset<32> & Instruction ,bitset<5> a, int j){
   for (int i=4 ; i >= 0; i--,j--){
     Instruction[j]=a[i];
   }
 }
-char gethex(string);
-void Evaluatehexcode(string & hexcode, bitset<32> & Instruction){
-  hexcode="";
-  int n=0;
+
+void InstructionInterface:: Evaluatehexcode(string & hexcode, bitset<32> & Instruction){
+  hexcode = "";
+  int n = 31;
   for(int i=0 ; i<8; i++){
-    string b="";
-    for(int j=0; j<4;j++,n++){
-      b+=char(Instruction[n]); //returns 1 or 0 char
+    string b = "";
+    for(int j=0; j<4; j++, n--){
+      b += Instruction[n]?'1':'0'; //returns 1 or 0 char
     }
-    b="rs2";
-    char c= gethex(b);
+    char c = hexDigit[b];
     hexcode+=c;
   }
+}
 
+void InstructionInterface::printhexInstruction(){
+  cout<<hexCode;
 }
 
 void  RType::EvaluateInstruction(){
@@ -49,7 +55,8 @@ void  RType::EvaluateInstruction(){
   arrangefunct3(Instruction, Details[op].funct3);
   arrangeregister(Instruction, regDetails[rd], 11);
   arrangeopcode(Instruction, Details[op].opcode);
-  
+  Evaluatehexcode(hexCode, Instruction);
+
 }
 
 void IType::EvaluateInstruction(){
@@ -64,6 +71,7 @@ void IType::EvaluateInstruction(){
   arrangefunct3(Instruction, Details[op].funct3);
   arrangeregister(Instruction, regDetails[rd], 12);
   arrangeopcode(Instruction, Details[op].opcode);
+  Evaluatehexcode(hexCode, Instruction);
 
 }
 
@@ -83,6 +91,7 @@ void SType::EvaluateInstruction(){
   arrangeregister(Instruction, regDetails[rs1], 19);
   arrangefunct3(Instruction, Details[op].funct3);
   arrangeopcode(Instruction, Details[op].opcode);
+  Evaluatehexcode(hexCode, Instruction);
 
 }
 
@@ -105,6 +114,7 @@ void BType::EvaluateInstruction(){
   arrangeregister(Instruction, regDetails[rs1], 19);
   arrangefunct3(Instruction, Details[op].funct3);
   arrangeopcode(Instruction, Details[op].opcode);
+  Evaluatehexcode(hexCode, Instruction);
 
 }
 
@@ -119,6 +129,7 @@ void UType::EvaluateInstruction(){
 
   arrangeregister(Instruction, regDetails[rd], 11);
   arrangeopcode(Instruction, Details[op].opcode);
+  Evaluatehexcode(hexCode, Instruction);
 
 }
 
@@ -139,5 +150,6 @@ void JType::EvaluateInstruction(){
 
   arrangeregister(Instruction, regDetails[rd], 11);
   arrangeopcode(Instruction, Details[op].opcode);
+  Evaluatehexcode(hexCode, Instruction);
 
 }

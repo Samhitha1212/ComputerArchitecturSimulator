@@ -1,25 +1,28 @@
+#pragma once
+
 #include <bitset>
 #include <string>
 using namespace std;
 
-class Instruction {
-private:
-  bitset<7> opcode;
+class InstructionInterface { 
+protected:
+  bitset<32> Instruction;
+  string hexCode;
 
 public:
   virtual void EvaluateInstruction() = 0;
-  bitset<5> evaluateRegister(string);
-  bitset<3> evaluatefunct3(string);
-  bitset<7> evaluatefunct7(string);
-  bitset<7> evaluateOpcode(string);
+  void printhexInstruction();
+  void arrangeopcode(bitset<32> & Instruction ,bitset<7>  a);
+  void arrangefunct3(bitset<32> & Instruction ,bitset<3>  a);
+  void arrangefunct7(bitset<32> & Instruction ,bitset<7>  a);
+  void arrangeregister(bitset<32> & Instruction ,bitset<5> a, int j);
+  void Evaluatehexcode(string & hexcode, bitset<32> & Instruction);
 };
 
-class RType : public Instruction {
+class RType : public InstructionInterface {
 private:
   string rs1, rs2, rd;
   string op;               // Here op means operatio(e.g. add)
-  bitset<32> Instruction;
-  string hexCode;
 
 public:
   RType(string op, string rd, string rs1, string rs2)
@@ -27,12 +30,11 @@ public:
   void EvaluateInstruction();
 };
 
-class IType : public Instruction {
+class IType : public InstructionInterface {
 private:
   string rs1,  rd;
   int imm;
   string op;
-  bitset<32> Instruction;
 
 public:
   IType(string op, string rd, string rs1, int imm)
@@ -40,12 +42,11 @@ public:
   void EvaluateInstruction();
 };
 
-class SType : public Instruction {
+class SType : public InstructionInterface {
 private:
   string rs1, rs2;
   int imm;
   string op;
-  bitset<32> Instruction;
 
 public:
   SType(string op, string rs2, string rs1, int imm)
@@ -53,12 +54,11 @@ public:
   void EvaluateInstruction();
 };
 
-class BType : public Instruction {
+class BType : public InstructionInterface {
 private:
   string rs1, rs2;
   int imm;
   string op;
-  bitset<32> Instruction;
 
 public:
   BType(string op, string rs1, string rs2, int imm)
@@ -66,24 +66,22 @@ public:
   void EvaluateInstruction();
 };
 
-class UType : public Instruction {
+class UType : public InstructionInterface {
 private:
   string rd;
   int imm;
   string op;
-  bitset<32> Instruction;
 
 public:
   UType(string op, string rd, int imm) : op(op), rd(rd), imm(imm) {}
   void EvaluateInstruction();
 };
 
-class JType : public Instruction {
+class JType : public InstructionInterface {
 private:
   string rd;
   int imm;
   string op;
-  bitset<32> Instruction;
 
 public:
   JType(string op, string rd, int imm) : op(op), rd(rd), imm(imm) {}

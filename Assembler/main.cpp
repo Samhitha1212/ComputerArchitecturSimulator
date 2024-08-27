@@ -43,7 +43,29 @@ string seperateImmediate(string &s) {
   return num;
 }
 
-bool IsValidImmediate(string s) { return true; }
+bool IsValidImmediate(string s){
+
+  if(s[0] == '0' && s[1] == 'x'){
+    for(int i=2; i<s.length(); i++){
+      if( (s[i] >= '0' && s[i] <= '9' ) || (s[i] >= 'a' && s[i] <= 'f' ) || (s[i] >= 'A' && s[i] <= 'F')){
+
+      }
+      else{
+        return false;
+      }  
+    }
+  }
+  else{
+    for(int i = 0; i < s.length(); i++){
+      if(s[i] >= '0' && s[i] <= '9'){}
+      else{
+        return false;
+      }
+    }
+  }
+  
+  return true;
+}
 
 bool IsValidLabel(string s) {
   auto it = Labels.find(s);
@@ -105,14 +127,14 @@ int main() {
       }
     }
 
-    cout << "No: of Labels" << Labels.size() << endl;
-    for (auto it = Labels.begin(); it != Labels.end(); it++) {
-      cout << it->first << " :" << it->second << endl;
-    }
+    // cout << "No: of Labels" << Labels.size() << endl;
+    // for (auto it = Labels.begin(); it != Labels.end(); it++) {
+    //   cout << it->first << " :" << it->second << endl;
+    // }
 
     for (int j = 0; j < instructions; j++) {
 
-      cout << Details[arg[j][0]].FMT << endl;
+      
 
       if (!IsValidOperation(arg[j][0])) {
         cout << "ERROR:Invalid Operation at Operation Number:" << j << endl;
@@ -127,6 +149,8 @@ int main() {
             continue;
           }
           RType I(arg[j][0], arg[j][1], arg[j][2], arg[j][3]);
+          I.EvaluateInstruction();
+          I.printhexInstruction();
 
         }
 
@@ -140,8 +164,13 @@ int main() {
               continue;
             }
             int n = convertToInt(arg[j][3]);
-
+              if (!(IsValidRegeister(arg[j][2]))) {
+            cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+            continue;
+          }
             IType I(arg[j][0], arg[j][1], arg[j][2], n);
+            I.EvaluateInstruction();
+            I.printhexInstruction();
 
           } else if (Details[arg[j][0]].opcode == bitset<7>("0000011") ||
                      Details[arg[j][0]].opcode == bitset<7>("1100111")) {
@@ -152,12 +181,13 @@ int main() {
               continue;
             }
             int n = convertToInt(num);
-            IType I(arg[j][0], arg[j][1], arg[j][2], n);
-          }
-
-          if (!(IsValidRegeister(arg[j][2]))) {
+              if (!(IsValidRegeister(arg[j][2]))) {
             cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
             continue;
+          }
+            IType I(arg[j][0], arg[j][1], arg[j][2], n);
+            I.EvaluateInstruction();
+            I.printhexInstruction();
           }
 
         }
@@ -175,6 +205,8 @@ int main() {
             continue;
           }
           SType I(arg[j][0], arg[j][1], arg[j][2], n);
+          I.EvaluateInstruction();
+          I.printhexInstruction();
 
         }
 
@@ -193,6 +225,8 @@ int main() {
           }
 
           BType I(arg[j][0], arg[j][1], arg[j][2], n);
+          I.EvaluateInstruction();
+          I.printhexInstruction();
 
         }
 
@@ -205,6 +239,8 @@ int main() {
           int n = convertToInt(arg[j][2]);
 
           UType I(arg[j][0], arg[j][1], n);
+          I.EvaluateInstruction();
+          I.printhexInstruction();
 
         }
 
@@ -219,13 +255,15 @@ int main() {
           n *= 4;
 
           JType I(arg[j][0], arg[j][1], n);
+          I.EvaluateInstruction();
+          I.printhexInstruction();
         }
+
+          cout<<endl;
       }
 
-      // cout << "Instruction" << j << endl;
-      // for (int i = 0; i < 4; i++) {
-      //   cout << arg[j][i] << endl;
-      // }
+
+    
     }
 
   } else {
