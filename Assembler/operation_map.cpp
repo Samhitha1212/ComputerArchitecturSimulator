@@ -3,13 +3,13 @@
 map<string, InstructionDetails> Details = {
 
     {"add", {'R', bitset<7>("0110011"), 0, 0}},
-    {"sub", {'R', bitset<7>("0110011"), 0, 20}},
+    {"sub", {'R', bitset<7>("0110011"), 0, 32}},
     {"xor", {'R', bitset<7>("0110011"), 4, 0}},
     {"or", {'R', bitset<7>("0110011"), 6, 0}},
     {"and", {'R', bitset<7>("0110011"), 7, 0}},
     {"sll", {'R', bitset<7>("0110011"), 1, 0}},
     {"srl", {'R', bitset<7>("0110011"), 5, 0}},
-    {"sra", {'R', bitset<7>("0110011"), 5, 20}},
+    {"sra", {'R', bitset<7>("0110011"), 5, 32}},
     {"slt", {'R', bitset<7>("0110011"), 2, 0}},
     {"sltu", {'R', bitset<7>("0110011"), 3, 0}},
 
@@ -17,9 +17,9 @@ map<string, InstructionDetails> Details = {
     {"xori", {'I', bitset<7>("0010011"), 4, -1}},
     {"ori", {'I', bitset<7>("0010011"), 6, -1}},
     {"andi", {'I', bitset<7>("0010011"), 7, -1}},
-    {"slli", {'I', bitset<7>("0010011"), 1, -1}},
-    {"srli", {'I', bitset<7>("0010011"), 5, -1}},
-    {"srai", {'I', bitset<7>("0010011"), 5, -1}},
+    {"slli", {'I', bitset<7>("0010011"), 1, 0}},
+    {"srli", {'I', bitset<7>("0010011"), 5, 0}},
+    {"srai", {'I', bitset<7>("0010011"), 5, 16}},
     {"slti", {'I', bitset<7>("0010011"), 2, -1}},
     {"sltui", {'I', bitset<7>("0010011"), 3, -1}},
 
@@ -134,6 +134,7 @@ bool IsValidRegeister(string s){
     auto it= regDetails.find(s);
     if(it != regDetails.end())
     return true;
+    cout<<s<<" is not recognised"<<endl;
     return false;
 }
 
@@ -141,5 +142,6 @@ bool IsValidOperation(string s){
     auto it= Details.find(s);
     if(it != Details.end())
     return true;
+    cout<<s<<" is not recognised"<<endl;
     return false;
 }

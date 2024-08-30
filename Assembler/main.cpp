@@ -4,12 +4,14 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 #define N 50
 
 using namespace std;
 
 extern map<string, InstructionDetails> Details;
 map<string, int> Labels;
+map<int,int>LineNumber;
 
 int convertToInt(string s) {
   if (s[0] == '0' && s[1] == 'x') {
@@ -43,7 +45,7 @@ string seperateImmediate(string &s) {
   return num;
 }
 
-bool IsValidImmediate(string s){
+bool IsValidImmediate(string s, bool flag){
 
   if(s[0] == '0' && s[1] == 'x'){
     for(int i=2; i<s.length(); i++){
@@ -51,6 +53,8 @@ bool IsValidImmediate(string s){
 
       }
       else{
+        if(flag)
+        cout<<s<<" is not recognised"<<endl;
         return false;
       }  
     }
@@ -59,6 +63,8 @@ bool IsValidImmediate(string s){
     for(int i = 0; i < s.length(); i++){
       if(s[i] >= '0' && s[i] <= '9'){}
       else{
+        if(flag)
+        cout<<s<<" is not recognised"<<endl;
         return false;
       }
     }
@@ -67,10 +73,12 @@ bool IsValidImmediate(string s){
   return true;
 }
 
-bool IsValidLabel(string s) {
+bool IsValidLabel(string s, bool flag) {
   auto it = Labels.find(s);
   if (it != Labels.end())
     return true;
+  if(flag)
+  cout<<s<<" is not recognised."<<endl;
   return false;
 }
 
@@ -78,11 +86,12 @@ int main() {
 
   ifstream inputfile("input.s");
   string s;
+  int linenumber=1;
   if (inputfile.is_open()) {
 
     int instructions = 0;
 
-    string arg[N][4];
+   vector <string >arg[N];
 
     while (inputfile.good()) {
 
@@ -90,62 +99,64 @@ int main() {
       cout << s << endl;
 
       if (s != "") {
-
-        int n = 0; // counts no of arguments
+        string temp="";
         for (int i = 0; i < s.length(); i++) {
           if (s[i] == '#') {
             break;
           } else if (s[i] == ':') {
-            n--;
-            Labels[arg[instructions][n]] = instructions;
-            arg[instructions][n] = "";
+            string a=arg[instructions].back();
+            Labels[a] = instructions;
+            arg[instructions].pop_back();
 
           } else if (s[i] != ' ' && s[i] != ',') {
             do {
-              arg[instructions][n] += s[i];
+              temp += s[i];
               i++;
 
             } while (i < s.length() && s[i] != ' ' && s[i] != ',' &&
                      s[i] != '#' && s[i] != ':');
 
             if (s[i] == ':') {
-              Labels[arg[instructions][n]] = instructions;
-              arg[instructions][n] = "";
+              Labels[temp] = instructions;
+              temp="";
 
             } else {
-              n++;
+              arg[instructions].push_back(temp);
+              temp="";
             }
           }
         }
 
         // check the instruction is valid or not then
 
-        if (n > 0) {
-          cout << n << endl;
+        if (arg[instructions].size() > 0) {
+          LineNumber[instructions]=linenumber;
+          cout << arg[instructions].size() << endl;
           instructions++;
         }
       }
+      linenumber++;
     }
 
-    // cout << "No: of Labels" << Labels.size() << endl;
-    // for (auto it = Labels.begin(); it != Labels.end(); it++) {
-    //   cout << it->first << " :" << it->second << endl;
-    // }
+    cout << "No: of Labels" << Labels.size() << endl;
+    for (auto it = Labels.begin(); it != Labels.end(); it++) {
+      cout << it->first << " :" << it->second << endl;
+    }
 
     for (int j = 0; j < instructions; j++) {
 
       
 
       if (!IsValidOperation(arg[j][0])) {
-        cout << "ERROR:Invalid Operation at Operation Number:" << j << endl;
+        cout << "ERROR:Invalid Operation at Operation Number:" << j<<" LineNumber: "<<LineNumber[j] << endl;
         continue; // break??
       } else if (!(IsValidRegeister(arg[j][1]))) {
-        cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+        cout << "ERROR:Invalid Register at Operation Number:" << j <<" LineNumber: "<<LineNumber[j] << endl;
         continue;
       } else {
         if (Details[arg[j][0]].FMT == 'R') {
           if (!(IsValidRegeister(arg[j][2]) && IsValidRegeister(arg[j][3]))) {
-            cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+            cout << "ERROR:Invalid Register at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
             continue;
           }
           RType I(arg[j][0], arg[j][1], arg[j][2], arg[j][3]);
@@ -158,14 +169,15 @@ int main() {
 
           if (Details[arg[j][0]].opcode == bitset<7>("0010011")) {
 
-            if (!IsValidImmediate(arg[j][3])) {
+
+            if (!IsValidImmediate(arg[j][3],true)) {
               cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
-                   << endl;
+                  <<" LineNumber: "<<LineNumber[j] << endl;
               continue;
             }
             int n = convertToInt(arg[j][3]);
               if (!(IsValidRegeister(arg[j][2]))) {
-            cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+            cout << "ERROR:Invalid Register at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
             continue;
           }
             IType I(arg[j][0], arg[j][1], arg[j][2], n);
@@ -175,14 +187,14 @@ int main() {
           } else if (Details[arg[j][0]].opcode == bitset<7>("0000011") ||
                      Details[arg[j][0]].opcode == bitset<7>("1100111")) {
             string num = seperateImmediate(arg[j][2]);
-            if (!IsValidImmediate(arg[j][3])) {
+            if (!IsValidImmediate(num ,true)) {
               cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
-                   << endl;
+                  <<" LineNumber: "<<LineNumber[j] << endl;
               continue;
             }
             int n = convertToInt(num);
               if (!(IsValidRegeister(arg[j][2]))) {
-            cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+            cout << "ERROR:Invalid Register at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
             continue;
           }
             IType I(arg[j][0], arg[j][1], arg[j][2], n);
@@ -194,14 +206,14 @@ int main() {
 
         else if (Details[arg[j][0]].FMT == 'S') {
           string num = seperateImmediate(arg[j][2]);
-          if (!IsValidImmediate(arg[j][3])) {
+          if (!IsValidImmediate(num,true)) {
             cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
-                 << endl;
+                 <<" LineNumber: "<<LineNumber[j]<< endl;
             continue;
           }
           int n = convertToInt(num);
           if (!(IsValidRegeister(arg[j][2]))) {
-            cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+            cout << "ERROR:Invalid Register at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
             continue;
           }
           SType I(arg[j][0], arg[j][1], arg[j][2], n);
@@ -211,16 +223,23 @@ int main() {
         }
 
         else if (Details[arg[j][0]].FMT == 'B') {
-          if (!IsValidLabel(arg[j][3])) {
-            cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
-                 << endl;
+         
+          int n;
+          if(IsValidLabel(arg[j][3],false)){
+            n = Labels[arg[j][3]]-j;
+            n *= 4;
+          }else if(IsValidImmediate(arg[j][3],false)){
+            n=convertToInt(arg[j][3]);
+          }else{
+            cout << "ERROR:Invalid Label or Immediate as 4th argument at Operation Number:" << j
+                 <<" LineNumber: "<<LineNumber[j]<< endl;
+            cout<<arg[j][3]<<" is not recognised"<<endl;
             continue;
           }
-          int n = Labels[arg[j][3]];
-          n = j - n;
-          n *= 4;
+          
+          
           if (!(IsValidRegeister(arg[j][2]))) {
-            cout << "ERROR:Invalid Register at Operation Number:" << j << endl;
+            cout << "ERROR:Invalid Register at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
             continue;
           }
 
@@ -231,9 +250,9 @@ int main() {
         }
 
         else if (Details[arg[j][0]].FMT == 'U') {
-          if (!IsValidImmediate(arg[j][2])) {
+          if (!IsValidImmediate(arg[j][2],true)) {
             cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
-                 << endl;
+                 <<" LineNumber: "<<LineNumber[j]<< endl;
             continue;
           }
           int n = convertToInt(arg[j][2]);
@@ -245,14 +264,18 @@ int main() {
         }
 
         else if (Details[arg[j][0]].FMT == 'J') {
-          if (!IsValidLabel(arg[j][2])) {
-            cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
-                 << endl;
+           int n;
+          if(IsValidLabel(arg[j][2],false)){
+            n = Labels[arg[j][2]]-j;
+            n *= 4;
+          }else if(IsValidImmediate(arg[j][2],false)){
+            n=convertToInt(arg[j][2]);
+          }else{
+            cout << "ERROR:Invalid Label or Immediate as 4th argument at Operation Number:" << j
+                 <<" LineNumber: "<<LineNumber[j]<< endl;
+            cout<<arg[j][2]<<" is not recognised"<<endl;
             continue;
           }
-          int n = Labels[arg[j][2]];
-          n = j - n;
-          n *= 4;
 
           JType I(arg[j][0], arg[j][1], n);
           I.EvaluateInstruction();

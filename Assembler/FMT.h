@@ -15,6 +15,7 @@ public:
   void arrangeopcode(bitset<32> & Instruction ,bitset<7>  a);
   void arrangefunct3(bitset<32> & Instruction ,bitset<3>  a);
   void arrangefunct7(bitset<32> & Instruction ,bitset<7>  a);
+  void arrangefunct6(bitset<32> & Instruction ,bitset<7>  a);
   void arrangeregister(bitset<32> & Instruction ,bitset<5> a, int j);
   void Evaluatehexcode(string & hexcode, bitset<32> & Instruction);
 };

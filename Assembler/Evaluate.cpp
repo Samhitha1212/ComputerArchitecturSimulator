@@ -23,6 +23,11 @@ void InstructionInterface:: arrangefunct7(bitset<32> & Instruction ,bitset<7>  a
     Instruction[j]=a[i];
   }
 }
+void InstructionInterface:: arrangefunct6(bitset<32> & Instruction ,bitset<7>  a){
+  for (int i=5, j=31 ; i >= 0; i--,j--){
+    Instruction[j]=a[i];
+  }
+}
 
 void InstructionInterface:: arrangeregister(bitset<32> & Instruction ,bitset<5> a, int j){
   for (int i=4 ; i >= 0; i--,j--){
@@ -61,15 +66,28 @@ void  RType::EvaluateInstruction(){
 
 void IType::EvaluateInstruction(){
 
-  bitset<12> val = imm;
+  if(op == "slli" || op== "srai" || op == "srli"){
+    arrangefunct6(Instruction,Details[op].funct7);
+    bitset<6> val = imm;
+
+    for(int i=5,j=25;i>=0;i--,j--){
+      Instruction[j]=val[i];
+    }
+
+
+  }else{
+    bitset<12> val = imm;
 
   for(int i=11, j=31; i >= 0; i--, j--){  //arranging imm in instruction
     Instruction[j] = val[i];
   }
+  }
+
+  
 
   arrangeregister(Instruction, regDetails[rs1], 19);
   arrangefunct3(Instruction, Details[op].funct3);
-  arrangeregister(Instruction, regDetails[rd], 12);
+  arrangeregister(Instruction, regDetails[rd], 11);
   arrangeopcode(Instruction, Details[op].opcode);
   Evaluatehexcode(hexCode, Instruction);
 
