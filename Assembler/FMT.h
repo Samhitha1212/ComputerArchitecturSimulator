@@ -2,6 +2,7 @@
 
 #include <bitset>
 #include <string>
+#include <fstream>
 using namespace std;
 
 class InstructionInterface { 
@@ -12,6 +13,7 @@ protected:
 public:
   virtual void EvaluateInstruction() = 0;
   void printhexInstruction();
+  string gethexInstruction();
   void arrangeopcode(bitset<32> & Instruction ,bitset<7>  a);
   void arrangefunct3(bitset<32> & Instruction ,bitset<3>  a);
   void arrangefunct7(bitset<32> & Instruction ,bitset<7>  a);

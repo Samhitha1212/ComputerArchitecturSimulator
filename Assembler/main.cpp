@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#define N 50
+#define N 200
 
 using namespace std;
 
@@ -82,9 +82,16 @@ bool IsValidLabel(string s, bool flag) {
   return false;
 }
 
+bool IsValidNoOfArguments(string operation,int required , int actual,int linenumber){
+  if(required == actual)
+  return true;
+  cout<<"At linenumber: "<<linenumber<<" the "<<operation<<" expects "<<required<<" arguments but you gave "<<actual<<" arguments"<<endl;
+  return false;
+}
 int main() {
 
-  ifstream inputfile("input.s");
+  ifstream inputfile("Rtestcases.s");
+  fstream outputfile("output.hex");
   string s;
   int linenumber=1;
   if (inputfile.is_open()) {
@@ -96,7 +103,7 @@ int main() {
     while (inputfile.good()) {
 
       getline(inputfile, s);
-      cout << s << endl;
+      
 
       if (s != "") {
         string temp="";
@@ -131,17 +138,16 @@ int main() {
 
         if (arg[instructions].size() > 0) {
           LineNumber[instructions]=linenumber;
-          cout << arg[instructions].size() << endl;
           instructions++;
         }
       }
       linenumber++;
     }
 
-    cout << "No: of Labels" << Labels.size() << endl;
-    for (auto it = Labels.begin(); it != Labels.end(); it++) {
-      cout << it->first << " :" << it->second << endl;
-    }
+    // cout << "No: of Labels" << Labels.size() << endl;
+    // for (auto it = Labels.begin(); it != Labels.end(); it++) {
+    //   cout << it->first << " :" << it->second << endl;
+    // }
 
     for (int j = 0; j < instructions; j++) {
 
@@ -155,21 +161,25 @@ int main() {
         continue;
       } else {
         if (Details[arg[j][0]].FMT == 'R') {
+          if(!IsValidNoOfArguments(arg[j][0],4,arg[j].size(),LineNumber[j])){
+            continue;
+          }
           if (!(IsValidRegeister(arg[j][2]) && IsValidRegeister(arg[j][3]))) {
             cout << "ERROR:Invalid Register at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
             continue;
           }
           RType I(arg[j][0], arg[j][1], arg[j][2], arg[j][3]);
           I.EvaluateInstruction();
-          I.printhexInstruction();
+          outputfile<<I.gethexInstruction()<<endl;
 
         }
 
         else if (Details[arg[j][0]].FMT == 'I') {
 
           if (Details[arg[j][0]].opcode == bitset<7>("0010011")) {
-
-
+            if(!IsValidNoOfArguments(arg[j][0],4,arg[j].size(),LineNumber[j])){
+            continue;
+            }
             if (!IsValidImmediate(arg[j][3],true)) {
               cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
                   <<" LineNumber: "<<LineNumber[j] << endl;
@@ -182,10 +192,13 @@ int main() {
           }
             IType I(arg[j][0], arg[j][1], arg[j][2], n);
             I.EvaluateInstruction();
-            I.printhexInstruction();
+            outputfile<<I.gethexInstruction()<<endl;
 
           } else if (Details[arg[j][0]].opcode == bitset<7>("0000011") ||
                      Details[arg[j][0]].opcode == bitset<7>("1100111")) {
+             if(!IsValidNoOfArguments(arg[j][0],3,arg[j].size(),LineNumber[j])){
+              continue;
+             }
             string num = seperateImmediate(arg[j][2]);
             if (!IsValidImmediate(num ,true)) {
               cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
@@ -199,12 +212,15 @@ int main() {
           }
             IType I(arg[j][0], arg[j][1], arg[j][2], n);
             I.EvaluateInstruction();
-            I.printhexInstruction();
+            outputfile<<I.gethexInstruction()<<endl;
           }
 
         }
 
         else if (Details[arg[j][0]].FMT == 'S') {
+           if(!IsValidNoOfArguments(arg[j][0],3,arg[j].size(),LineNumber[j])){
+              continue;
+             }
           string num = seperateImmediate(arg[j][2]);
           if (!IsValidImmediate(num,true)) {
             cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
@@ -218,12 +234,14 @@ int main() {
           }
           SType I(arg[j][0], arg[j][1], arg[j][2], n);
           I.EvaluateInstruction();
-          I.printhexInstruction();
+          outputfile<<I.gethexInstruction()<<endl;
 
         }
 
         else if (Details[arg[j][0]].FMT == 'B') {
-         
+           if(!IsValidNoOfArguments(arg[j][0],4,arg[j].size(),LineNumber[j])){
+              continue;
+             }
           int n;
           if(IsValidLabel(arg[j][3],false)){
             n = Labels[arg[j][3]]-j;
@@ -245,11 +263,14 @@ int main() {
 
           BType I(arg[j][0], arg[j][1], arg[j][2], n);
           I.EvaluateInstruction();
-          I.printhexInstruction();
+          outputfile<<I.gethexInstruction()<<endl;
 
         }
 
         else if (Details[arg[j][0]].FMT == 'U') {
+           if(!IsValidNoOfArguments(arg[j][0],3,arg[j].size(),LineNumber[j])){
+              continue;
+             }
           if (!IsValidImmediate(arg[j][2],true)) {
             cout << "ERROR:Invalid Immediate Value at Operation Number:" << j
                  <<" LineNumber: "<<LineNumber[j]<< endl;
@@ -259,11 +280,14 @@ int main() {
 
           UType I(arg[j][0], arg[j][1], n);
           I.EvaluateInstruction();
-          I.printhexInstruction();
+          outputfile<<I.gethexInstruction()<<endl;
 
         }
 
         else if (Details[arg[j][0]].FMT == 'J') {
+           if(!IsValidNoOfArguments(arg[j][0],3,arg[j].size(),LineNumber[j])){
+              continue;
+             }
            int n;
           if(IsValidLabel(arg[j][2],false)){
             n = Labels[arg[j][2]]-j;
@@ -279,10 +303,10 @@ int main() {
 
           JType I(arg[j][0], arg[j][1], n);
           I.EvaluateInstruction();
-          I.printhexInstruction();
+          outputfile<<I.gethexInstruction()<<endl;
         }
 
-          cout<<endl;
+          
       }
 
 

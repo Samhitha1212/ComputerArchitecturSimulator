@@ -80,6 +80,10 @@ void InstructionInterface::printhexInstruction(){
   cout<<hexCode;
 }
 
+string InstructionInterface::gethexInstruction(){
+  return hexCode;
+}
+
 void  RType::EvaluateInstruction(){
 
   arrangefunct7(Instruction, Details[op].funct7);

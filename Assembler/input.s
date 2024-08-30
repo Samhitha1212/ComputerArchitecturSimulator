@@ -4,13 +4,13 @@ jal x0, L1
 sd x5, 12(x6)
 lui x9, 0x10000
 jalr x0 ,0(x1)
-L1: addi x9, x10, 12
+L1: addi x9, x10
 
 
 sra x9, x11, x18
 sub x4, x23, x19
 or zero, s9, x18
-sll x14, x31, x17
+sll x14, x31, x17 , x4
 and t2, t5, t1
 L2 :
 addi t1, x8, 100
