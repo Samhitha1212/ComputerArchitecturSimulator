@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#define N 200
+#define N 100
 
 using namespace std;
 
@@ -90,7 +90,7 @@ bool IsValidNoOfArguments(string operation,int required , int actual,int linenum
 }
 int main() {
 
-  ifstream inputfile("testcases.s");
+  ifstream inputfile("input.s");
   fstream outputfile("output.hex");
   string s;
   int linenumber=1;
@@ -144,14 +144,7 @@ int main() {
       linenumber++;
     }
 
-    // cout << "No: of Labels" << Labels.size() << endl;
-    // for (auto it = Labels.begin(); it != Labels.end(); it++) {
-    //   cout << it->first << " :" << it->second << endl;
-    // }
-
     for (int j = 0; j < instructions; j++) {
-
-      
 
       if (!IsValidOperation(arg[j][0])) {
         cout << "ERROR:Invalid Operation at Operation Number:" << j<<" LineNumber: "<<LineNumber[j] << endl;
@@ -351,13 +344,8 @@ int main() {
              outputfile<<I.gethexInstruction()<<endl;
           }
           outputfile<<I.gethexInstruction()<<endl;
-        }
-
-          
+        } 
       }
-
-
-    
     }
 
   } else {
