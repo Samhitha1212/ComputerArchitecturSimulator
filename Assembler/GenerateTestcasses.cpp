@@ -30,27 +30,30 @@ string GenerateRType(){
   return ( Roperations[getrand(8)] + " " + Registers[getrand(64)]+" "+Registers[getrand(64)]+" "+Registers[getrand(64)]);
 }
 string GenerateI1Type(){
-  return ( I1operations[getrand(7)] + " " + Registers[getrand(64)]+" "+Registers[getrand(64)]+" "+to_string(rand()%5000));
+  return ( I1operations[getrand(7)] + " " + Registers[getrand(64)]+" "+Registers[getrand(64)]+" "+to_string(rand()%2042));
 }
 string GenerateI2Type(){
-  return ( I2operations[getrand(8)] + " " + Registers[getrand(64)]+" "+to_string(rand()%5000)+"("+Registers[getrand(64)]+")");
+  return ( I2operations[getrand(8)] + " " + Registers[getrand(64)]+" "+to_string(rand()%2042)+"("+Registers[getrand(64)]+")");
 }
 string GenerateSType(){
-  return ( Soperations[getrand(4)] + " " + Registers[getrand(64)]+" "+to_string(rand()%5000)+"("+Registers[getrand(64)]+")");
+  return ( Soperations[getrand(4)] + " " + Registers[getrand(64)]+" "+to_string(rand()%2042)+"("+Registers[getrand(64)]+")");
 }
 
 string GenerateUType(){
-  return ( Uoperations[getrand(2)] + " " + Registers[getrand(64)]+" "+to_string(rand()%1000000000));
+  return ( Uoperations[getrand(2)] + " " + Registers[getrand(64)]+" "+to_string(rand()%100000));
 }
 
 int main() {
 
   srand(time(0));
 
-  fstream file("Rtestcases.s");
+  fstream file("testcases.s");
   if(file.is_open()){
       for(int i=0; i<100 ; i++){
-    file<<GenerateRType()<<endl;
+    file<<GenerateI1Type()<<endl;
+  }
+  for(int i=0; i<100 ; i++){
+    file<<GenerateI2Type()<<endl;
   }
   }else{
     cout<<"file not open"<<endl;

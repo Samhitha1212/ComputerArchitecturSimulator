@@ -16,7 +16,7 @@ bool valid_imm(int imm, int n_bits, int even){
     }
   }
   else if(even == 1){
-    if(imm <= t-2 && imm >= -t){
+    if(imm <= t-2 && imm >= -t && imm%2 == 0){
       return true;
     }
     else{
@@ -113,7 +113,7 @@ void IType::EvaluateInstruction(){
       Evaluatehexcode(hexCode, Instruction);
     }
     else{
-        cout<<"Immediate value doesnot fits in 6 bits"<<endl;
+        // cout<<"Immediate value : "<<imm<<" doesnot fits in 6 bits"<<endl;
     }
 
   }else{
@@ -131,7 +131,7 @@ void IType::EvaluateInstruction(){
       Evaluatehexcode(hexCode, Instruction);
     }
     else{
-      cout<<"Immediate value doesnot fit in 12 bits"<<endl;
+     
     }
   }
 }
@@ -156,7 +156,7 @@ void SType::EvaluateInstruction(){
     Evaluatehexcode(hexCode, Instruction);
   }
   else{
-    cout<<"Immediate value doesnot fit in 12 bits"<<endl;
+    
   }
 }
 
@@ -182,7 +182,7 @@ void BType::EvaluateInstruction(){
     arrangeopcode(Instruction, Details[op].opcode);
     Evaluatehexcode(hexCode, Instruction);
   }else{
-    cout<<"Immediate value doesnot fit in 13 bits"<<endl;
+    
 
   }
 
@@ -203,7 +203,7 @@ void UType::EvaluateInstruction(){
     Evaluatehexcode(hexCode, Instruction);
   }
   else{
-    cout<<"Immediate value doesnot fit in 20 bits"<<endl;
+    
   }
 }
 
@@ -228,6 +228,6 @@ void JType::EvaluateInstruction(){
     Evaluatehexcode(hexCode, Instruction);
   }
   else{
-    cout<<"Immediate value doesn't fit in 21 bits"<<endl;
+    
   }
 }

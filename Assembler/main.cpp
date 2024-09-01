@@ -90,7 +90,7 @@ bool IsValidNoOfArguments(string operation,int required , int actual,int linenum
 }
 int main() {
 
-  ifstream inputfile("Rtestcases.s");
+  ifstream inputfile("testcases.s");
   fstream outputfile("output.hex");
   string s;
   int linenumber=1;
@@ -192,7 +192,18 @@ int main() {
           }
             IType I(arg[j][0], arg[j][1], arg[j][2], n);
             I.EvaluateInstruction();
-            outputfile<<I.gethexInstruction()<<endl;
+            string t=I.gethexInstruction();
+            int k=12;
+            if(arg[j][0] == "srai" ||arg[j][0] == "slli" ||arg[j][0] == "srli" ){
+              k=6;
+            }
+          if(t ==""){
+            cout<<"ERROR:Invalid Immediate at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
+          }else{
+             outputfile<<I.gethexInstruction()<<endl;
+          }
+            
 
           } else if (Details[arg[j][0]].opcode == bitset<7>("0000011") ||
                      Details[arg[j][0]].opcode == bitset<7>("1100111")) {
@@ -212,7 +223,14 @@ int main() {
           }
             IType I(arg[j][0], arg[j][1], arg[j][2], n);
             I.EvaluateInstruction();
-            outputfile<<I.gethexInstruction()<<endl;
+            string t=I.gethexInstruction();
+            int k=12;
+          if(t ==""){
+            cout<<"ERROR:Invalid Immediate at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
+          }else{
+             outputfile<<I.gethexInstruction()<<endl;
+          }
           }
 
         }
@@ -234,7 +252,14 @@ int main() {
           }
           SType I(arg[j][0], arg[j][1], arg[j][2], n);
           I.EvaluateInstruction();
-          outputfile<<I.gethexInstruction()<<endl;
+          string t=I.gethexInstruction();
+            int k=12;
+          if(t ==""){
+            cout<<"ERROR:Invalid Immediate at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
+          }else{
+             outputfile<<I.gethexInstruction()<<endl;
+          }
 
         }
 
@@ -263,7 +288,14 @@ int main() {
 
           BType I(arg[j][0], arg[j][1], arg[j][2], n);
           I.EvaluateInstruction();
-          outputfile<<I.gethexInstruction()<<endl;
+          string t=I.gethexInstruction();
+          if(t ==""){
+            cout<<"ERROR:Invalid Immediate at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"Immediate value : "<<n<<" doesnot fits in 13 bits or not even"<<endl;
+          }else{
+             outputfile<<I.gethexInstruction()<<endl;
+          }
+         
 
         }
 
@@ -280,7 +312,14 @@ int main() {
 
           UType I(arg[j][0], arg[j][1], n);
           I.EvaluateInstruction();
-          outputfile<<I.gethexInstruction()<<endl;
+          string t=I.gethexInstruction();
+            int k=20;
+          if(t ==""){
+            cout<<"ERROR:Invalid Immediate at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
+          }else{
+             outputfile<<I.gethexInstruction()<<endl;
+          }
 
         }
 
@@ -303,6 +342,14 @@ int main() {
 
           JType I(arg[j][0], arg[j][1], n);
           I.EvaluateInstruction();
+          string t=I.gethexInstruction();
+          int k=21;
+          if(t ==""){
+            cout<<"ERROR:Invalid Immediate at Operation Number:" << j <<" LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"Immediate value : "<<n<<" either doesnot fits in "<<k<<" bits or not even"<<endl;
+          }else{
+             outputfile<<I.gethexInstruction()<<endl;
+          }
           outputfile<<I.gethexInstruction()<<endl;
         }
 
