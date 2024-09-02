@@ -381,8 +381,7 @@ int main() {
           }else if(IsValidImmediate(arg[j][2],false)){
             n=convertToInt(arg[j][2]);
           }else{
-            cout << "ERROR:Invalid Label or Immediate as 4th argument at Operation Number:" << j
-                 <<" LineNumber: "<<LineNumber[j]<< endl;
+            cout << "ERROR:Invalid Label or Immediate as 4th argument at LineNumber: "<<LineNumber[j]<< endl;
             cout<<arg[j][2]<<" is not recognised"<<endl;
             continue;
           }
