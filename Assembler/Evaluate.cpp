@@ -5,7 +5,8 @@
 #include "operation_map.h"
 using namespace std;
 
-bool valid_imm(int imm, int n_bits, int even){
+/*it checks whether the given imm value is in the range of imm value of the given instruction or not*/
+bool valid_imm(int imm, int n_bits, int even){         
   int t = pow(2, n_bits-1);
   if(even == 0){
     if(imm <= t-1 && imm >= -t){
@@ -33,36 +34,42 @@ bool valid_imm(int imm, int n_bits, int even){
   } 
 } 
 
-
+/*This function arranges the opcode bits of an instruction in appropriate positions*/
 void InstructionInterface:: arrangeopcode(bitset<32> & Instruction ,bitset<7>  a){
   for (int i=6; i >= 0; i--){
     Instruction[i]=a[i];
   }
 }
 
+/*This function arranges the funct3 bits of an instruction in appropriate positions*/
 void InstructionInterface:: arrangefunct3(bitset<32> & Instruction ,bitset<3>  a){
   for (int i=2, j=14 ; i >= 0; i--, j--){
     Instruction[j]=a[i];
   }
 }
 
+/*This function arranges the funct7 bits of an instruction in appropriate positions*/
 void InstructionInterface:: arrangefunct7(bitset<32> & Instruction ,bitset<7>  a){
   for (int i=6, j=31 ; i >= 0; i--,j--){
     Instruction[j]=a[i];
   }
 }
+
+/*This function arranges the funct6 bits of an instruction in appropriate positions*/
 void InstructionInterface:: arrangefunct6(bitset<32> & Instruction ,bitset<7>  a){
   for (int i=5, j=31 ; i >= 0; i--,j--){
     Instruction[j]=a[i];
   }
 }
 
+/*It arranges the bits of respective register in binary code from position j*/
 void InstructionInterface:: arrangeregister(bitset<32> & Instruction ,bitset<5> a, int j){
   for (int i=4 ; i >= 0; i--,j--){
     Instruction[j]=a[i];
   }
 }
 
+/*it given the hex code from the  given binary code*/
 void InstructionInterface:: Evaluatehexcode(string & hexcode, bitset<32> & Instruction){
   hexcode = "";
   int n = 31;
@@ -76,14 +83,17 @@ void InstructionInterface:: Evaluatehexcode(string & hexcode, bitset<32> & Instr
   }
 }
 
+/*To print the hex code*/
 void InstructionInterface::printhexInstruction(){
   cout<<hexCode;
 }
 
+/*returns hex code*/
 string InstructionInterface::gethexInstruction(){
   return hexCode;
 }
 
+/*It evaluates the hex code from binary instruction formed by arranging opcode, rs2, rs1, funct3, rd, funct7 in their respective positions*/
 void  RType::EvaluateInstruction(){
 
   arrangefunct7(Instruction, Details[op].funct7);
@@ -96,6 +106,7 @@ void  RType::EvaluateInstruction(){
 
 }
 
+/*It evaluates the hex code from binary instruction formed by arranging opcode, rs1, funct3, rd, imm in their respective positions*/
 void IType::EvaluateInstruction(){
 
   if(op == "slli" || op== "srai" || op == "srli"){
@@ -136,6 +147,7 @@ void IType::EvaluateInstruction(){
   }
 }
 
+/*It evaluates the hex code from binary instruction formed by arranging opcode, rs2, rs1, funct3, imm in their respective positions*/
 void SType::EvaluateInstruction(){
 
   if(valid_imm(imm, 12, 0)){
@@ -160,6 +172,7 @@ void SType::EvaluateInstruction(){
   }
 }
 
+/*It evaluates the hex code from binary instruction formed by arranging opcode, rs2, rs1, funct3, imm in their respective positions*/
 void BType::EvaluateInstruction(){
 
   if(valid_imm(imm, 13, 1)){
@@ -188,6 +201,7 @@ void BType::EvaluateInstruction(){
 
 }
 
+/*It evaluates the hex code from binary instruction formed by arranging opcode, rd, imm in their respective positions*/
 void UType::EvaluateInstruction(){
 
   if(valid_imm(imm, 20, 0)){
@@ -207,6 +221,7 @@ void UType::EvaluateInstruction(){
   }
 }
 
+/*It evaluates the hex code from binary instruction formed by arranging opcode, rs2, rs1, funct3, rd, funct7 in their respective positions*/
 void JType::EvaluateInstruction(){
 
   if(valid_imm(imm, 21, 1)){

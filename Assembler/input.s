@@ -1,37 +1,58 @@
-addi x4, x4, 2048
-addi x5, x5, 2047
-addi x6, x6, -2048
-addi x7, x7, -2049
-slli x4, x5, 32
-slli x4, x5, 31
-slli x4, x5, -32
-slli x4, x5, -33
-ld x5, 2047(x6)
-ld x5, 2048(x6)
-ld x5, -2048(x6)
-ld x5, -2049(x6)
-sd x5, 2047(x6)
-sd x6, 2047(x6)
-sd x6, -2048(x6)
-sd x6, -2049(x6)
-beq x6, x7, 4095
-beq x3, x4, 4094
-beq x3, x4, 4096
-beq x3, x4, 23
-beq x3, x4, -4096
-beq x3, x4, -4097
-bne x6, x7, 4095
-bne x3, x4, 4094
-bne x3, x4, 4096
-bne x3, x4, 23
-bne x3, x4, -4096
-bne x3, x4, -4097
-lui x8, 524288
-lui x8, 524287
-lui x8, -524288
-lui x8, -524289
-jal x9, 1048576
-jal x9, 1048575
-jal x9, 1048574
-jal x9, -1048576
-jal x9, -1048577
+
+lui x3 0x10000
+addi x3 x3 0x200
+lui x4 0x10000
+ld x20 0(x4) 
+; n
+addi x4 x4 8
+
+
+add x21 x0 x0 
+;i
+
+Loop: 
+    bge x21 x20 LoopExit
+    ld x5 0(x4)
+    ld x6 8(x4)
+    addi x4 x4 16
+    
+    jal x1 GCD
+    sd x7 0(x3)
+    addi x3 x3 8
+    
+    addi x21 x21 1 ;i++
+    beq x0 x0 Loop
+
+LoopExit:
+    beq x0 x0 ProgramExit
+
+
+; calculates GCD of x5 , x6 and keeps the result in x7
+; uses x9,x10 (min,max) , x11
+GCD:
+    blt x5 x6 L1
+    add x9 x6 x0
+    add x10 x5 x0
+    beq x0 x0 L2
+    
+L1: 
+    add x9 x5 x0
+    add x10 x6 x0
+L2:
+    beq x9 x0 F
+L3: sub x10 x10 x9
+    bge x10 x9 L3
+    
+    beq x10 x0 F
+    ; swaping x9 and x10
+    add x11 x9 x0
+    add x9 x10 x0
+    add x10 x11 x0
+    beq x0 x0 L3
+    
+ F:  
+     add x7 x9 x0
+GCDExit:
+    jalr x0 0(x1)
+
+ProgramExit: add x0 x0 x0

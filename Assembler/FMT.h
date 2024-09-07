@@ -5,7 +5,7 @@
 #include <fstream>
 using namespace std;
 
-class InstructionInterface { 
+class InstructionInterface {     
 protected:
   bitset<32> Instruction;
   string hexCode;
@@ -25,7 +25,7 @@ public:
 class RType : public InstructionInterface {
 private:
   string rs1, rs2, rd;
-  string op;               // Here op means operatio(e.g. add)
+  string op;               // Here op means operation (e.g. add)
 
 public:
   RType(string op, string rd, string rs1, string rs2)

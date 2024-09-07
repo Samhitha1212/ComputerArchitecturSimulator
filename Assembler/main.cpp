@@ -1,5 +1,6 @@
 #include "FMT.h"
 #include "operation_map.h"
+#include "ErrorHandling.h"
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -13,101 +14,6 @@ extern map<string, InstructionDetails> Details;
 map<string, pair<int,int>> Labels;
 map<int,int>LineNumber;
 
-int convertToInt(string s) {
-  if (s[0] == '0' && s[1] == 'x') {
-    return stoi(s, 0, 16);
-  } else {
-    return stoi(s);
-  }
-}
-
-string seperateImmediate(string &s) {
-  string num = "";
-  int k = 0;
-  for (; k < s.length(); k++) {
-    if (s[k] != '(') {
-      num += s[k];
-    } else {
-      break;
-    }
-  }
-
-  k++;
-  string rs1 = "";
-  for (; k < s.length(); k++) {
-    if (s[k] != ')') {
-      rs1 += s[k];
-    } else {
-      break;
-    }
-  }
-  s = rs1;
-  return num;
-}
-
-bool IsvalidIandR(string s,int linenumber){
-  bool f=false;
-  bool e=false;
-  int k=0;
-  for( ; k<s.length();k++){
-    if(s[k] == '('){
-      f=true;
-      break;
-    }
-  }
-  if(!f){
-    k=0;
-  }
-  for( ; k<s.length();k++){
-    if(s[k] == ')'){
-      e=true;
-      break;
-    }
-  }
-  if(e && f){
-    return true;
-  }else if( !e && !f){
-    cout<<"ERROR:At line Number: "<<linenumber<<" Invalid argument "<<s<<" (no paranthesis) "<<endl;
-    return false;
-  }else {
-    cout<<"ERROR:At line Number: "<<linenumber<<" Invalid argument "<<s<<" (missing paranthesis) "<<endl;
-    return false;
-  }
-}
-
-bool IsValidImmediate(string s, bool flag){
-
-  if(s[0] == '0' && s[1] == 'x'){
-    for(int i=2; i<s.length(); i++){
-      if( (s[i] >= '0' && s[i] <= '9' ) || (s[i] >= 'a' && s[i] <= 'f' ) || (s[i] >= 'A' && s[i] <= 'F')){
-
-      }
-      else{
-        if(flag)
-        cout<<s<<" is not recognised"<<endl;
-        return false;
-      }  
-    }
-  }
-  else{
-    int i=0;
-    if(s[0] == '-' || s[0] == '+'){
-      i++;
-    }
-    for(; i < s.length(); i++){
-      
-      if(s[i] >= '0' && s[i] <= '9'){}
-      else{
-        if(flag)
-        cout<<s<<" is not recognised"<<endl;
-        return false;
-      }
-    }
-  }
-  
-  return true;
-}
-
 bool IsValidLabel(string s, bool flag) {
   auto it = Labels.find(s);
   if (it != Labels.end())
@@ -117,23 +23,17 @@ bool IsValidLabel(string s, bool flag) {
   return false;
 }
 
-bool IsValidNoOfArguments(string operation,int required , int actual,int linenumber){
-  if(required == actual)
-  return true;
-  cout<<"ERROR:At linenumber: "<<linenumber<<" the "<<operation<<" expects "<<required<<" arguments but you gave "<<actual<<" arguments"<<endl;
-  return false;
-}
 int main() {
 
-  ifstream inputfile("input.s");
-  fstream outputfile("output.hex");
+  ifstream inputfile("input.s");                                  //input file
+  fstream outputfile("output.hex", ios::trunc | ios::in | ios::out);         //output file
   string s;
-  int linenumber=1;
+  int linenumber=1;                          //variable to keep the counter of linenumber
   if (inputfile.is_open()) {
 
     int instructions = 0;
 
-   vector <string >arg[N];
+   vector <string >arg[N];                    //vector array to store the given assembly instructions arguments
 
     while (inputfile.good()) {
 
@@ -396,7 +296,6 @@ int main() {
           }else{
              outputfile<<I.gethexInstruction()<<endl;
           }
-          outputfile<<I.gethexInstruction()<<endl;
         } 
       }
     }

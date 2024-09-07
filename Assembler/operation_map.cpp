@@ -130,6 +130,7 @@ map<string, char> hexDigit = {
 
 };
 
+/*Checks whether it is valid register or not*/
 bool IsValidRegeister(string s){
     auto it= regDetails.find(s);
     if(it != regDetails.end())
@@ -138,6 +139,8 @@ bool IsValidRegeister(string s){
     return false;
 }
 
+/*Checks whether the given operation is valid or not
+e.g. add is valid but did is not a valid operator*/
 bool IsValidOperation(string s){
     auto it= Details.find(s);
     if(it != Details.end())
