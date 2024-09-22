@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class textSection {
+class textSection{
 private:
   vector<bitset<8>> mem;
   unsigned int top;
