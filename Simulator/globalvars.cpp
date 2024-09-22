@@ -1,7 +1,7 @@
 #include "memory.h"
 #include "registers.h"
 #include <map>
-
+#define N 100
 MemoryClass Memory;
 RegisterFileClass RegisterFile;
 vector<string>

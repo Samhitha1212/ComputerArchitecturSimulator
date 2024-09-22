@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include "globalvars.h"
-#define N 100
+
 using namespace std;
 
 
@@ -31,13 +31,19 @@ void loadfile( string filename){
 
     int instructions = 0;
 
+    bool Isdatamode=false;
     while (inputfile.good()) {
 
       getline(inputfile, s);
       
 
       if (s != "") {
-        string temp="";
+        if(s==".data"){
+          Isdatamode=true;
+        }else if(s==".text"){
+          Isdatamode=false;
+        }else if(!Isdatamode){
+           string temp="";
         for (int i = 0; i < s.length(); i++) {
           if (s[i] == ';') {
             break;
@@ -80,6 +86,56 @@ void loadfile( string filename){
           LineNumber[instructions]=linenumber;
           instructions++;
         }
+        }else {
+          //find 1 st word
+          
+          string temp;
+          for(int i=0; i<s.length();i++){
+             if (s[i] == ';') {
+            break;
+          } else if(s[i] != ' ' && s[i] != ',') {
+            do {
+              temp += s[i];
+              i++;
+
+            } while (i < s.length() && s[i] != ' ' && s[i] != ',' &&
+                     s[i] != ';' );
+            int nb=0;
+            if(temp == ".dword"){
+              nb=8;
+            }else if( temp ==".word"){
+              nb=4;
+            }else if( temp ==".half"){
+              nb=2;
+            }else if( temp ==".byte"){
+              nb=2;
+            }
+            temp="";
+            while( i<s.length()){
+              if(s[i] != ' ' && s[i] != ',') {
+            do {
+              temp += s[i];
+              i++;
+
+            }while (i < s.length() && s[i] != ' ' && s[i] != ',' &&
+            s[i] != ';' );
+            long int num = convertToInt(temp);
+            Memory.writeData(nb,num);
+            temp="";
+
+            if(s[i]==';'){
+              i--;
+              break;
+            }
+            }
+             i++;
+            }
+
+
+          }
+          }
+        }
+       
       }
       linenumber++;
     }
@@ -112,7 +168,7 @@ void loadfile( string filename){
           }
           RType I(arg[j][0], arg[j][1], arg[j][2], arg[j][3]);
           I.EvaluateInstruction();
-          Memory.textSection.writeInstruction(I.gethexInstruction());
+          Memory.textSectionstart.writeInstruction(I.gethexInstruction());
           outputfile<<I.gethexInstruction()<<endl;
 
         }
@@ -143,7 +199,7 @@ void loadfile( string filename){
             cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
           }else{
-             Memory.textSection.writeInstruction(I.gethexInstruction());
+             Memory.textSectionstart.writeInstruction(I.gethexInstruction());
              outputfile<<I.gethexInstruction()<<endl;
           }
             
@@ -174,7 +230,7 @@ void loadfile( string filename){
             cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
           }else{
-             Memory.textSection.writeInstruction(I.gethexInstruction());
+             Memory.textSectionstart.writeInstruction(I.gethexInstruction());
              outputfile<<I.gethexInstruction()<<endl;
           }
           }
@@ -206,7 +262,7 @@ void loadfile( string filename){
             cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
           }else{
-             Memory.textSection.writeInstruction(I.gethexInstruction());
+             Memory.textSectionstart.writeInstruction(I.gethexInstruction());
              outputfile<<I.gethexInstruction()<<endl;
           }
 
@@ -241,7 +297,7 @@ void loadfile( string filename){
             cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" doesnot fits in 13 bits or not even"<<endl;
           }else{
-             Memory.textSection.writeInstruction(I.gethexInstruction());
+             Memory.textSectionstart.writeInstruction(I.gethexInstruction());
              outputfile<<I.gethexInstruction()<<endl;
           }
          
@@ -266,7 +322,7 @@ void loadfile( string filename){
             cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
           }else{
-             Memory.textSection.writeInstruction(I.gethexInstruction());
+             Memory.textSectionstart.writeInstruction(I.gethexInstruction());
              outputfile<<I.gethexInstruction()<<endl;
           }
 
@@ -296,7 +352,7 @@ void loadfile( string filename){
             cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" either doesnot fits in "<<k<<" bits or not even"<<endl;
           }else{
-             Memory.textSection.writeInstruction(I.gethexInstruction());
+             Memory.textSectionstart.writeInstruction(I.gethexInstruction());
              outputfile<<I.gethexInstruction()<<endl;
           }
         } 

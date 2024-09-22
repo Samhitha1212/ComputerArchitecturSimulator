@@ -1,11 +1,11 @@
 #include "ErrorHandling.h"
 using namespace std;
 
-int convertToInt(string s) {
+long int convertToInt(string s) {
   if (s[0] == '0' && s[1] == 'x') {
-    return stoi(s, 0, 16);
+    return stol(s, 0, 16);
   } else {
-    return stoi(s);
+    return stol(s);
   }
 }
 

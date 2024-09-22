@@ -2,7 +2,7 @@
 #include "memory.h"
 #include "registers.h"
 #include <map>
-
+#define N 100
 extern RegisterFileClass RegisterFile;
 extern MemoryClass Memory;
 extern vector<string>

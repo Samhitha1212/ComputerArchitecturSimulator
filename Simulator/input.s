@@ -1,4 +1,7 @@
+.data
 
+.dword 3, 12, 0, 125, 50, 32, 16 
+.text
 lui x3 0x10000
 addi x3 x3 0x200
 lui x4 0x10000
