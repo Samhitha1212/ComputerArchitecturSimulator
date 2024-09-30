@@ -1,6 +1,9 @@
 #include "memory.h"
 #include "registers.h"
+#include "StackDetails.h"
 #include <map>
+#include <stack>
+#include <vector>
 #define N 100
 MemoryClass Memory;
 RegisterFileClass RegisterFile;
@@ -10,3 +13,6 @@ map<string, pair<int, int>> Labels;
 map<int, int> LineNumber;
 unsigned int PC;
 unsigned int currentInstruction;
+vector<int> breakpoints;
+std::stack<StackDetails> functionStack;
+

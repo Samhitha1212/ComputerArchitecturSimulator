@@ -11,17 +11,6 @@
 
 using namespace std;
 
-
-
-bool IsValidLabel(string s, bool flag) {
-  auto it = Labels.find(s);
-  if (it != Labels.end())
-    return true;
-  if(flag)
-  cout<<s<<" is not recognised."<<endl;
-  return false;
-}
-
 void loadfile( string filename){
   ifstream inputfile("input.s");                                  //input file
   fstream outputfile("output.hex", ios::trunc | ios::in | ios::out);         //output file

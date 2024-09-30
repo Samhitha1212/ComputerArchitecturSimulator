@@ -26,6 +26,7 @@ bitset<64> MemoryClass::ReadData(int n, unsigned int address) {
           a[ia] = b[ib];
         }
       }
+      return a;
     }
 
   } else if (address >= 0x10000 && address < 0x10000) {
@@ -42,6 +43,7 @@ bitset<64> MemoryClass::ReadData(int n, unsigned int address) {
           a[ia] = b[ib];
         }
       }
+      return a;
     }
 
   } else if (address >= 0x20000 && address < 0x30000) {
@@ -58,6 +60,7 @@ bitset<64> MemoryClass::ReadData(int n, unsigned int address) {
           a[ia] = b[ib];
         }
       }
+      return a;
     }
 
   } else if (address >= 0x30000 && address < 0x40000) {
@@ -74,6 +77,7 @@ bitset<64> MemoryClass::ReadData(int n, unsigned int address) {
           a[ia] = b[ib];
         }
       }
+      return a;
     }
 
   } else if (address >= 0x40000 && address < 0x50000) {
@@ -199,3 +203,52 @@ void MemoryClass::writeData(int n, long int value) {
   std::cout<<endl;
 
  }
+
+
+void  MemoryClass::printMemory( int n , unsigned int address){
+
+ if (address >= 0 && address < 0x10000) {
+    if (address + n <= 0x10000) {
+       textSectionstart.printMemmory(n, address);
+    } else {
+      int r = 0x10000 - address;
+      textSectionstart.printMemmory(n - r, address);
+      dataSectionstart.printMemmory(0x10000,r, 0);
+     
+    }
+
+  } else if (address >= 0x10000 && address < 0x10000) {
+    if (address + n <= 0x20000) {
+      dataSectionstart.printMemmory(0x10000,n, address-0x10000);
+    } else {
+      int r = 0x20000 - address;
+      dataSectionstart.printMemmory(0x10000,n-r, address-0x10000);
+      dataSection2.printMemmory(0x20000,r, 0);
+    }
+
+  } else if (address >= 0x20000 && address < 0x30000) {
+    if (address + n <= 0x30000) {
+         dataSection2.printMemmory(0x20000,n, address-0x20000);
+    } else {
+      int r = 0x30000 - address;
+      dataSection2.printMemmory(0x20000,n-r, address-0x20000);
+      dataSection3.printMemmory(0x30000,r, 0);
+
+    }
+
+  } else if (address >= 0x30000 && address < 0x40000) {
+    if (address + n <= 0x40000) {
+       dataSection3.printMemmory(0x30000,n, address-0x30000);
+    } else {
+      int r = 0x40000 - address;
+      dataSection3.printMemmory(0x30000,n-r, address-0x30000);
+      stackSection.printMemmory(r, 0x10000-1);
+   
+    }
+
+  } else if (address >= 0x40000 && address < 0x50000) {
+    if (address + n <= 0x50000) {
+      stackSection.printMemmory(n, 0x50000-1-address);
+    }
+  }
+}

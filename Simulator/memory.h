@@ -19,6 +19,7 @@ public:
                  bitset<64> value); // address is index
   bitset<64> readData(int n, unsigned int address);
   void printMemmory()const;
+  void printMemmory(int n , unsigned int address)const;
 };
 
 class dataSectionClass {
@@ -33,6 +34,7 @@ public:
   void writeData(int n, long int value);
   bitset<64> readData(int n, unsigned int address);
   void printMemmory(unsigned int start_address)const;
+  void printMemmory(unsigned int start_address,int n , unsigned int address)const;
 };
 
 class stackSectionClass {
@@ -45,6 +47,7 @@ public:
   void writeData(int n, unsigned int address, bitset<64> value);
   bitset<64> readData(int n, unsigned int address);
   void printMemmory()const;
+  void printMemmory(int n , unsigned int address)const;
 };
 
 class MemoryClass {
@@ -65,4 +68,5 @@ public:
   void writeInstruction(string s);
   bitset<32> readInstruction(unsigned int pc);
   void printMemory()const;
+  void printMemory( int n , unsigned int address);
 };

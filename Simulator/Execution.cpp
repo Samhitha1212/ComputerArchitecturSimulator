@@ -5,6 +5,7 @@
 #include "registers.h"
 #include "memory.h"
 #include "operation_map.h"
+#include "ErrorHandling.h"
 using namespace std;
 
 void executeRType(int n){
@@ -93,10 +94,6 @@ void executeIType(int n){
     long int t = static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + stol(arg[n][3]);
     RegisterFile.writeReg(regDetails[arg[n][1]], t);
   }
-  else if(arg[n][0] == "subi"){
-    long int t = static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + stol(arg[n][3]);
-    RegisterFile.writeReg(regDetails[arg[n][1]], t);
-  }
   else if(arg[n][0] == "andi"){
     bitset<64> t = stol(arg[n][3]);
     bitset<64> b = RegisterFile.readReg(regDetails[arg[n][2]]) & t;
@@ -160,21 +157,81 @@ void executeIType(int n){
       RegisterFile.writeReg(regDetails[arg[n][1]], b);
     }
   }
-  else if(arg[n][0] == "lb"){
-    bitset<64> value = Memory.ReadData(1, stoul(arg[n][2]) + stoi(arg[n][3]));
-    RegisterFile.writeReg(regDetails[arg[n][1]], value);
+  else if(arg[n][0] == "lbu"){
+    long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if( k >= 0 && k < 0x50000){
+      bitset<64> value = Memory.ReadData(1, k);
+      RegisterFile.writeReg(regDetails[arg[n][1]], value);
+    }
+   
+  }
+  else if(arg[n][0] == "lhu"){
+     long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if( k >= 0 && k < 0x50000){
+      bitset<64> value = Memory.ReadData(2, k);
+      RegisterFile.writeReg(regDetails[arg[n][1]], value);
+    }
+  }
+  else if(arg[n][0] == "lwu"){
+    long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if( k >= 0 && k < 0x50000){
+      bitset<64> value = Memory.ReadData(4, k);
+      RegisterFile.writeReg(regDetails[arg[n][1]], value);
+    }
+  }
+    else if(arg[n][0] == "lb"){
+    long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if( k >= 0 && k < 0x50000){
+      bitset<64> value = Memory.ReadData(1, k);
+      if(value[7]){
+        for( int i = 8;i<64; i++){
+          value[i]=1;
+        }
+      }
+      RegisterFile.writeReg(regDetails[arg[n][1]], value);
+    }
+   
   }
   else if(arg[n][0] == "lh"){
-    bitset<64> value = Memory.ReadData(2, stoul(arg[n][2]) + stoi(arg[n][3]));
-    RegisterFile.writeReg(regDetails[arg[n][1]], value);
+     long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if( k >= 0 && k < 0x50000){
+      bitset<64> value = Memory.ReadData(2, k);
+        if(value[15]){
+        for( int i = 16;i<64; i++){
+          value[i]=1;
+        }
+      }
+      RegisterFile.writeReg(regDetails[arg[n][1]], value);
+    }
   }
   else if(arg[n][0] == "lw"){
-    bitset<64> value = Memory.ReadData(4, stoul(arg[n][2]) + stoi(arg[n][3]));
-    RegisterFile.writeReg(regDetails[arg[n][1]], value);
+    long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if( k >= 0 && k < 0x50000){
+      bitset<64> value = Memory.ReadData(4, k);
+        if(value[31]){
+        for( int i = 32;i<64; i++){
+          value[i]=1;
+        }
+      }
+      RegisterFile.writeReg(regDetails[arg[n][1]], value);
+    }
   }
   else if(arg[n][0] == "ld"){
-    bitset<64> value = Memory.ReadData(8, stoul(arg[n][2]) + stoi(arg[n][3]));
-    RegisterFile.writeReg(regDetails[arg[n][1]], value);
+     long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if( k >= 0 && k < 0x50000){
+      bitset<64> value = Memory.ReadData(8, k);
+      RegisterFile.writeReg(regDetails[arg[n][1]], value);
+    }
+  }else if( arg[n][0]== "jalr"){
+      int imm=0;
+        if(IsValidImmediate(arg[n][3],false)){
+            imm=convertToInt(arg[n][3]);
+        }
+      long int rs1= static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]] ).to_ulong());
+      rs1+=imm;
+          RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
+          PC+=rs1;
+          return ;
   }
   PC = PC +4;
 }
@@ -182,32 +239,117 @@ void executeIType(int n){
 void executeSType(int n){
   if(arg[n][0] == "sb"){
     bitset<64> value = RegisterFile.readReg(regDetails[arg[n][1]]);
-    unsigned int addr = static_cast<unsigned int>(RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) + stoi(arg[n][3]);
-    Memory.WriteData(1, addr, value);
+    long int addr = static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if(addr >=0 && addr < 0x50000){
+       Memory.WriteData(1, addr, value);
+    }
+   
   }
   else if(arg[n][0] == "sh"){
     bitset<64> value = RegisterFile.readReg(regDetails[arg[n][1]]);
-    unsigned int addr = static_cast<unsigned int>(RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) + stoi(arg[n][3]);
-    Memory.WriteData(2, addr, value);
+    long int addr = static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if(addr >=0 && addr < 0x50000){
+       Memory.WriteData(2, addr, value);
+    }
   }
   else if(arg[n][0] == "sw"){
     bitset<64> value = RegisterFile.readReg(regDetails[arg[n][1]]);
-    unsigned int addr = static_cast<unsigned int>(RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) + stoi(arg[n][3]);
-    Memory.WriteData(4, addr, value);
+    long int addr = static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if(addr >=0 && addr < 0x50000){
+       Memory.WriteData(4, addr, value);
+    }
   }
   else if(arg[n][0] == "sd"){
     bitset<64> value = RegisterFile.readReg(regDetails[arg[n][1]]);
-    unsigned int addr = static_cast<unsigned int>(RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) + stoi(arg[n][3]);
-    Memory.WriteData(8, addr, value);
+    long int addr = static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
+    if(addr >=0 && addr < 0x50000){
+       Memory.WriteData(8, addr, value);
+    }
   }
   PC = PC + 4;
 }
 
-void executeBType(int n){}
+void executeBType(int n){
+  if (arg[n][0] == "beq") {
+    if (RegisterFile.readReg(regDetails[arg[n][1]]) ==
+        RegisterFile.readReg(regDetails[arg[n][2]])) {
+      PC += convertToInt(arg[n][3]);
+    } else {
+      PC += 4;
+    }
 
-void executeJType(int n){}
+  } else if (arg[n][0] == "bneq") {
+    if (RegisterFile.readReg(regDetails[arg[n][1]]) !=
+        RegisterFile.readReg(regDetails[arg[n][2]])) {
+      PC += convertToInt(arg[n][3]);
+    } else {
+      PC += 4;
+    }
+  } else if (arg[n][0] == "blt") {
+    if (static_cast<long int>(
+            RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) <
+        static_cast<long int>(
+            RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
+      PC += convertToInt(arg[n][3]);
+    } else {
+      PC += 4;
+    }
 
-void executeUType(int n){}
+  } else if (arg[n][0] == "bge") {
+    if (static_cast<long int>(
+            RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) >=
+        static_cast<long int>(
+            RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
+      PC += convertToInt(arg[n][3]);
+    } else {
+      PC += 4;
+    }
+  } else if (arg[n][0] == "bltu") {
+    if ((RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) <
+        (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
+      PC += convertToInt(arg[n][3]);
+    } else {
+      PC += 4;
+    }
+
+  } else if (arg[n][0] == "bgeu") {
+    if ((RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) >=
+        (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
+      PC += convertToInt(arg[n][3]);
+    } else {
+      PC += 4;
+    }
+  }
+}
+
+void executeJType(int n){
+    if( arg[n][0] =="jal"){
+    int imm=0;
+          if(IsValidLabel(arg[n][2],false)){
+            imm = Labels[arg[n][2]].first-n;
+            imm *= 4;
+          }else if(IsValidImmediate(arg[n][2],false)){
+            imm=convertToInt(arg[n][2]);
+          }
+
+          RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
+          PC+=imm;
+  }
+}
+
+void executeUType(int n){
+   if(arg[n][0] == "lui"){
+    int imm= convertToInt( arg[n][2] );
+    imm=imm<<12;
+    RegisterFile.writeReg( regDetails[ arg[n][1]] , imm);
+
+  }else if ( arg[n][0] == "auipc"){
+    int imm= convertToInt( arg[n][2] );
+    imm=imm<<12;
+    RegisterFile.writeReg( regDetails[ arg[n][1]] , PC+imm);
+  }
+  PC+=4;
+}
 
 void ExecuteInstruction(int n){
   if(Details[arg[n][0]].FMT == 'R'){

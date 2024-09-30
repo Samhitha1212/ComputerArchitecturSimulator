@@ -1,4 +1,5 @@
 #include "ErrorHandling.h"
+#include "globalvars.h"
 using namespace std;
 
 long int convertToInt(string s) {
@@ -106,5 +107,14 @@ bool IsValidNoOfArguments(string operation,int required , int actual,int linenum
   if(required == actual)
   return true;
   cout<<"ERROR:At linenumber: "<<linenumber<<" the "<<operation<<" expects "<<required<<" arguments but you gave "<<actual<<" arguments"<<endl;
+  return false;
+}
+
+bool IsValidLabel(string s, bool flag) {
+  auto it = Labels.find(s);
+  if (it != Labels.end())
+    return true;
+  if(flag)
+  cout<<s<<" is not recognised."<<endl;
   return false;
 }
