@@ -4,6 +4,7 @@
 #include "StackDetails.h"
 #include <map>
 #include <vector>
+#include <set>
 #include <stack>
 #define N 100
 extern RegisterFileClass RegisterFile;
@@ -14,6 +15,6 @@ extern map<string, pair<int, int>> Labels;
 extern map<int, int> LineNumber;
 extern unsigned int PC;
 extern unsigned int currentInstruction;
-extern vector<int> breakpoints;
+extern set<int> breakpoints;
 extern std::stack<StackDetails> functionStack;
 

@@ -51,7 +51,7 @@ void executeRType(int n){
       b[i] = RegisterFile.readReg(regDetails[arg[n][3]])[i];
     }
 
-    if(RegisterFile.readReg(regDetails[arg[n][3]])[63] = 1){ 
+    if(RegisterFile.readReg(regDetails[arg[n][3]])[63] == 1){ 
       int d = b.to_ulong();
       bitset<64> r = 0;
       r[63] = RegisterFile.readReg(regDetails[arg[n][2]])[63];
@@ -122,7 +122,7 @@ void executeIType(int n){
   else if(arg[n][0] == "srai"){
     bitset<6> b = stol(arg[n][3]);
 
-    if(RegisterFile.readReg(regDetails[arg[n][3]])[63] = 1){ 
+    if(RegisterFile.readReg(regDetails[arg[n][3]])[63] == 1){ 
       int d = b.to_ulong();
       bitset<64> r = 0;
       r[63] = RegisterFile.readReg(regDetails[arg[n][2]])[63];

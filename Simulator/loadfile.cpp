@@ -12,7 +12,7 @@
 using namespace std;
 
 void loadfile( string filename){
-  ifstream inputfile("input.s");                                  //input file
+  ifstream inputfile(filename);                                  //input file
   fstream outputfile("output.hex", ios::trunc | ios::in | ios::out);         //output file
   string s;
   int linenumber=1;                          //variable to keep the counter of linenumber

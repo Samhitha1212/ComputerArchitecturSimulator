@@ -4,6 +4,7 @@
 #include <map>
 #include <stack>
 #include <vector>
+#include <set>
 #define N 100
 MemoryClass Memory;
 RegisterFileClass RegisterFile;
@@ -13,6 +14,6 @@ map<string, pair<int, int>> Labels;
 map<int, int> LineNumber;
 unsigned int PC;
 unsigned int currentInstruction;
-vector<int> breakpoints;
+set<int> breakpoints;
 std::stack<StackDetails> functionStack;
 
