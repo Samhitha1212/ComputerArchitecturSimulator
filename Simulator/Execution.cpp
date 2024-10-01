@@ -86,6 +86,7 @@ void executeRType(int n){
       RegisterFile.writeReg(regDetails[arg[n][1]], b);
     }
   }
+  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
   PC = PC +4;
 }
 
@@ -223,15 +224,21 @@ void executeIType(int n){
       RegisterFile.writeReg(regDetails[arg[n][1]], value);
     }
   }else if( arg[n][0]== "jalr"){
-      int imm=0;
-        if(IsValidImmediate(arg[n][3],false)){
-            imm=convertToInt(arg[n][3]);
-        }
-      long int rs1= static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]] ).to_ulong());
-      rs1+=imm;
-          RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
-          PC+=rs1;
-          return ;
+    int imm=0;
+    if(IsValidImmediate(arg[n][3],false)){
+        imm=convertToInt(arg[n][3]);
+    }
+    long int rs1= static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]] ).to_ulong());
+    rs1+=imm;
+    RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
+    PC+=rs1;
+    return ;
+  }
+  if(Details[arg[n][0]].opcode == 0010011){
+    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
+  }
+  else{
+    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); PC"<<PC<<endl;
   }
   PC = PC +4;
 }
@@ -266,6 +273,7 @@ void executeSType(int n){
        Memory.WriteData(8, addr, value);
     }
   }
+  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); PC"<<PC<<endl;
   PC = PC + 4;
 }
 
@@ -273,16 +281,20 @@ void executeBType(int n){
   if (arg[n][0] == "beq") {
     if (RegisterFile.readReg(regDetails[arg[n][1]]) ==
         RegisterFile.readReg(regDetails[arg[n][2]])) {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += convertToInt(arg[n][3]);
     } else {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += 4;
     }
 
   } else if (arg[n][0] == "bneq") {
     if (RegisterFile.readReg(regDetails[arg[n][1]]) !=
         RegisterFile.readReg(regDetails[arg[n][2]])) {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += convertToInt(arg[n][3]);
     } else {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += 4;
     }
   } else if (arg[n][0] == "blt") {
@@ -290,8 +302,10 @@ void executeBType(int n){
             RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) <
         static_cast<long int>(
             RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += convertToInt(arg[n][3]);
     } else {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += 4;
     }
 
@@ -300,23 +314,29 @@ void executeBType(int n){
             RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) >=
         static_cast<long int>(
             RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += convertToInt(arg[n][3]);
     } else {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += 4;
     }
   } else if (arg[n][0] == "bltu") {
     if ((RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) <
         (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += convertToInt(arg[n][3]);
     } else {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += 4;
     }
 
   } else if (arg[n][0] == "bgeu") {
     if ((RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) >=
         (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += convertToInt(arg[n][3]);
     } else {
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
       PC += 4;
     }
   }
@@ -325,29 +345,31 @@ void executeBType(int n){
 void executeJType(int n){
     if( arg[n][0] =="jal"){
     int imm=0;
-          if(IsValidLabel(arg[n][2],false)){
-            imm = Labels[arg[n][2]].first-n;
-            imm *= 4;
-          }else if(IsValidImmediate(arg[n][2],false)){
-            imm=convertToInt(arg[n][2]);
-          }
+    if(IsValidLabel(arg[n][2],false)){
+      imm = Labels[arg[n][2]].first-n;
+      imm *= 4;
+    }else if(IsValidImmediate(arg[n][2],false)){
+      imm=convertToInt(arg[n][2]);
+    }
 
-          RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
-          PC+=imm;
+    RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
+    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2];
+    PC+=imm;
   }
 }
 
 void executeUType(int n){
    if(arg[n][0] == "lui"){
-    int imm= convertToInt( arg[n][2] );
-    imm=imm<<12;
+    int imm = convertToInt( arg[n][2] );
+    imm = imm << 12;
     RegisterFile.writeReg( regDetails[ arg[n][1]] , imm);
 
   }else if ( arg[n][0] == "auipc"){
-    int imm= convertToInt( arg[n][2] );
-    imm=imm<<12;
+    int imm = convertToInt( arg[n][2] );
+    imm = imm << 12;
     RegisterFile.writeReg( regDetails[ arg[n][1]] , PC+imm);
   }
+  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2];
   PC+=4;
 }
 
