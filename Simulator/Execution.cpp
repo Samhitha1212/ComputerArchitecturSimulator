@@ -438,4 +438,5 @@ void InitializeTotalData(){
     breakpoints.clear();
     functionStack.clear();
     functionStack.push_back({string("main"),0});
+    IsFileloaded = false;
 }

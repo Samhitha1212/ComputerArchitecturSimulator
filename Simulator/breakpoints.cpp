@@ -53,9 +53,8 @@ void showBreakpoints(){
   for( auto i : breakpoints){
     cout<<LineNumber[i]<<" ";
   }
-  cout<<endl;
   }else{
     cout<<"No break points"<<endl;
   }
-
+  cout<<endl;
 }

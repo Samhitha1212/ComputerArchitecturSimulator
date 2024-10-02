@@ -18,4 +18,5 @@ extern unsigned int PC;
 extern unsigned int currentInstruction;
 extern set<int> breakpoints;
 extern std::vector<StackDetails> functionStack;
+extern bool IsFileloaded;
 

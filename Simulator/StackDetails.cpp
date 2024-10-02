@@ -24,7 +24,10 @@ void showStack(){
     std::cout<<x.name<<":"<<dec<<x.line<<endl;
   }
   }else{
-    cout<<"Empty Call Stack : Execution Completed"<<endl;
+    if(IsFileloaded){
+      cout<<"Empty Call Stack : Execution Completed"<<endl;
+    }else{
+      cout<<"Empty Call Stack : No file loaded"<<endl;
+    } 
   }
-
 }

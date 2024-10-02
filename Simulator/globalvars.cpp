@@ -17,5 +17,6 @@ unsigned int PC;
 unsigned int currentInstruction;
 set<int> breakpoints;
 std::vector<StackDetails> functionStack;
+bool Isfileloaded = false;
 
 

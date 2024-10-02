@@ -217,7 +217,7 @@ void stackSectionClass::printMemmory() const {
 
   cout << "From 0x" << hex << 0x40000 << " to 0x" << hex << (0x50000 - top - 1)
        << " contains 0x00" << endl;
-  for (int i = 0; i < top; i++) {
+  for (int i = top-1; i >= 0;  i--) {
     std::cout << "Memory[0x" << hex << (0x50000 - i - 1) << "] = 0x" << hex
               << mem[i].to_ulong() << endl;
   }
