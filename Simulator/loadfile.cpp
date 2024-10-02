@@ -18,7 +18,6 @@ void loadfile( string filename){
   int linenumber=1;                          //variable to keep the counter of linenumber
   if (inputfile.is_open()) {
 
-    int instructions = 0;
 
     bool Isdatamode=false;
     while (inputfile.good()) {
@@ -41,22 +40,22 @@ void loadfile( string filename){
             if(IsValidLabel(a,false)){
               cout<<"ERROR:At line Number "<<linenumber<<" label: "<<a<<" already exists"<<endl;
             }
-            Labels[a] = pair(instructions,linenumber);
+            Labels[a] = instructions;
             arg[instructions].pop_back();
 
-          } else if (s[i] != ' ' && s[i] != ',') {
+          } else if (s[i] != ' ' && s[i] != ',' && s[i] != '\t') {
             do {
               temp += s[i];
               i++;
 
             } while (i < s.length() && s[i] != ' ' && s[i] != ',' &&
-                     s[i] != ';' && s[i] != ':');
+                     s[i] != ';' && s[i] != ':'  && s[i] != '\t');
 
             if (s[i] == ':') {
               if(IsValidLabel(temp,false)){
               cout<<"ERROR:At line Number "<<linenumber<<" label: "<<temp<<" already exists"<<endl;;
             }
-              Labels[temp] = pair(instructions,linenumber);
+              Labels[temp] = instructions;
               temp="";
 
             } else if(s[i]==';'){
@@ -131,10 +130,10 @@ void loadfile( string filename){
 
     for(auto it=Labels.end();it != Labels.begin();  ){
       it--;
-      if(it->second.first < instructions){
+      if(it->second < instructions){
         break;
       }else{
-        cout<<"ERROR:At line number: "<<it->second.second<<" label: "<<it->first<<" does not map to any instruction"<<endl;
+        cout<<"ERROR:At line number: "<<LineNumber[it->second]<<" label: "<<it->first<<" does not map to any instruction"<<endl;
       }
     }
 
@@ -202,6 +201,7 @@ void loadfile( string filename){
               continue;
              }
             string num = seperateImmediate(arg[j][2]);
+            arg[j].push_back(num);
             if (!IsValidImmediate(num ,true)) {
               cout << "ERROR:Invalid Immediate Value at LineNumber: "<<LineNumber[j] << endl;
               continue;
@@ -234,6 +234,7 @@ void loadfile( string filename){
               continue;
              }
           string num = seperateImmediate(arg[j][2]);
+          arg[j].push_back(num);
           if (!IsValidImmediate(num,true)) {
             cout << "ERROR:Invalid Immediate Value at LineNumber: "<<LineNumber[j]<< endl;
             continue;
@@ -263,7 +264,7 @@ void loadfile( string filename){
              }
           int n;
           if(IsValidLabel(arg[j][3],false)){
-            n = Labels[arg[j][3]].first-j;
+            n = Labels[arg[j][3]]-j;
             n *= 4;
           }else if(IsValidImmediate(arg[j][3],false)){
             n=convertToInt(arg[j][3]);
@@ -323,7 +324,7 @@ void loadfile( string filename){
              }
            int n;
           if(IsValidLabel(arg[j][2],false)){
-            n = Labels[arg[j][2]].first-j;
+            n = Labels[arg[j][2]]-j;
             n *= 4;
           }else if(IsValidImmediate(arg[j][2],false)){
             n=convertToInt(arg[j][2]);

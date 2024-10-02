@@ -1,61 +1,26 @@
-.data
-
-.dword 3, 12, 0, 125, 50, 32, 16 
-.text
-lui x3 0x10000
-addi x3 x3 0x200
-lui x4 0x10000
-ld x20 0(x4) 
-; n
-addi x4 x4 8
-
-
-add x21 x0 x0 
-;i
-
-Loop: 
-    bge x21 x20 LoopExit
-    ld x5 0(x4)
-    ld x6 8(x4)
-    addi x4 x4 16
-    
-    jal x1 GCD
-    sd x7 0(x3)
-    addi x3 x3 8
-    
-    addi x21 x21 1 ;i++
-    beq x0 x0 Loop
-
-LoopExit:
-    beq x0 x0 ProgramExit
-
-
-; calculates GCD of x5 , x6 and keeps the result in x7
-; uses x9,x10 (min,max) , x11
-GCD:
-    blt x5 x6 L1
-    add x9 x6 x0
-    add x10 x5 x0
-    beq x0 x0 L2
-    
-L1: 
-    add x9 x5 x0
-    add x10 x6 x0
-L2:
-    beq x9 x0 F
-L3: sub x10 x10 x9
-    bge x10 x9 L3
-    
-    beq x10 x0 F
-    ; swaping x9 and x10
-    add x11 x9 x0
-    add x9 x10 x0
-    add x10 x11 x0
-    beq x0 x0 L3
-    
- F:  
-     add x7 x9 x0
-GCDExit:
-    jalr x0 0(x1)
-
-ProgramExit: add x0 x0 x0
+main: addi x10, x0, 2
+      lui sp, 0x50
+      jal x1, fact
+      beq x0, x0, exit
+fact: addi sp, sp, -16
+ 	  sd x1, 8(sp)
+ 	  sd x10, 0(sp)
+ 	  addi x5, x10, -1
+ 	  blt x0, x5, L1
+ 	  addi x10, x0, 1
+ 	  addi sp, sp, 16
+ 	  jalr x0, 0(x1)
+L1:   addi x10, x10, -1
+ 	  jal x1, fact
+ 	  addi x6, x10, 0
+ 	  ld x10, 0(sp)
+ 	  ld x1, 8(sp)
+ 	  addi sp, sp, 16
+        addi x20, x0, 0
+        addi x8, x0, 0
+mul: add x8, x8, x6
+     addi x20, x20, 1
+     bne x20, x10, mul
+     add x10, x8, x0
+     jalr x0, 0(x1)
+exit: add x0, x0, x0

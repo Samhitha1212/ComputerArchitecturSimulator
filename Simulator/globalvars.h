@@ -11,10 +11,11 @@ extern RegisterFileClass RegisterFile;
 extern MemoryClass Memory;
 extern vector<string>
     arg[N]; // vector array to store the given assembly instructions arguments
-extern map<string, pair<int, int>> Labels;
+extern map<string, int> Labels;
 extern map<int, int> LineNumber;
+extern int instructions; //total number of instructions
 extern unsigned int PC;
 extern unsigned int currentInstruction;
 extern set<int> breakpoints;
-extern std::stack<StackDetails> functionStack;
+extern std::vector<StackDetails> functionStack;
 

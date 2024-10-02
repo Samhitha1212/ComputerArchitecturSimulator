@@ -4,6 +4,7 @@
 #include "operation_map.h"
 #include "ErrorHandling.h"
 #include "breakpoints.h"
+#include "StackDetails.h"
 #include <iostream>
 #include <string>
 #include<regex>
@@ -12,7 +13,6 @@ using namespace std;
 
 int main(){
   string input;
-  int instructions;
 
   do{
     getline(cin, input);
@@ -22,35 +22,123 @@ int main(){
     regex delBreakpoint("del\\s+break\\s+[0-9]+");
     regex memory(R"(mem\s*(0x[0-9A-Fa-f]+|\d+)\s*(\d+))");
     if(regex_match(input, match, load)){
-      loadfile(match[2]);
+      InitializeTotalData();
+      loadfile(match[1]);
+       cout<<endl;
     }
     else if(regex_match(input, match, breakpoint)){
-      addBreakPoint(stoi(match[2]));
+      string s;
+      int i=0;
+      for( ; i< input.length(); i++){
+         if(input[i] != ' '){
+          do{
+            i++;
+          }while(i<input.length() && input[i] != ' '  );
+          i++;
+          break;
+        }
+      }
+
+       for( ; i< input.length(); i++){
+        if(input[i]>='0' && input[i]<= '9'){
+          do{
+            s+=input[i];
+            i++;
+          }while(i<input.length() && input[i]>='0' && input[i]<= '9' );
+          break;
+        }
+      }
+      addBreakPoint(stoi(s));
+      cout<<endl;
     }
     else if(regex_match(input, match, delBreakpoint)){
-      deleteBreakPoint(stoi(match[2]));
+       string s;
+      int i=0;
+      for( ; i< input.length(); i++){
+        if(input[i] != ' '){
+          do{
+            i++;
+          }while(i<input.length() && input[i] != ' '  );
+          i++;
+          break;
+        }
+      }
+      for( ; i< input.length(); i++){
+         if(input[i] != ' '){
+          do{
+            i++;
+          }while(i<input.length() && input[i] != ' '  );
+          i++;
+          break;
+        }
+      }
+       for( ; i< input.length(); i++){
+        if(input[i]>='0' && input[i]<= '9'){
+          do{
+            s+=input[i];
+            i++;
+          }while(i<input.length() && input[i]>='0' && input[i]<= '9'  );
+          break;
+        }
+      }
+      deleteBreakPoint(stoi(s));
+      cout<<endl;
     }
     else if(input == "run"){
-      for(int i = 0; i < instructions; i++){
-        ExecuteInstruction(i);
+      if(currentInstruction<instructions){
+        ExecuteInstruction(currentInstruction);
+      for(; !IsbreakPoint(currentInstruction) && currentInstruction < instructions ; ){
+        ExecuteInstruction(currentInstruction);
       }
+      if(currentInstruction>=instructions){
+        cout<<"Execution Completed"<<endl;
+        functionStack.clear();
+      }else{
+        cout<<"Execution stopped at Break point"<<endl;
+      }
+      }else{
+        cout<<"Nothing to run"<<endl;
+        cout<<"Execution Completed"<<endl;
+      }
+       cout<<endl;
     }
-    else if(input == "step"){}
+    else if(input == "step"){
+      if(currentInstruction<instructions){
+         ExecuteInstruction(currentInstruction);
+      if(currentInstruction>instructions){
+        cout<<"Execution Completed"<<endl;
+        functionStack.clear();
+      }
+      }else{
+        cout<<"Nothing to step"<<endl;
+        cout<<"Execution Completed"<<endl;
+      }
+       cout<<endl;
+    }
     else if(regex_match(input, match, memory)){
       Memory.printMemory(stoi(match[2]), convertToInt(match[1]));
+      cout<<endl;
+    }else if(input=="show memory"){
+      Memory.printMemory();
     }
     else if(input == "regs"){
       RegisterFile.printRegs();
     }
-    else if(input == "show-stack"){}
+    else if(input == "show-stack"){
+      showStack();
+      cout<<endl;
+    }else{
+      cout<<"Invalid command"<<endl;
+      cout<<endl;
+    }
 
   }while(input != "exit");
 
   
-  loadfile("input.s");
-  Memory.WriteData( 8,0x10000,12653 );
+  // loadfile("input.s");
+  // Memory.WriteData( 8,0x10000,12653 );
 
-  Memory.printMemory();
+
    
 
 

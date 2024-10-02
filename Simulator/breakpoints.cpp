@@ -9,7 +9,7 @@ void addBreakPoint( int lineN){
         return;
       }
     }
-    int lg=lineN;
+    int lg=lineN+1;
     for( auto it = LineNumber.begin(); it != LineNumber.end(); it++){
       if(it->second > lineN){
         lg=it->second<lg?it->second:lg;
@@ -18,10 +18,12 @@ void addBreakPoint( int lineN){
      for( auto it = LineNumber.begin(); it != LineNumber.end(); it++){
       if(it->second == lg){
         breakpoints.insert(it->first);
-        std::cout<<"No Instruction at line number" <<lineN<<" So Breakpoint is setted at next nearest instruction at line number"<<lg<<endl;
+        std::cout<<"No Instruction at line number " <<lineN<<" So Breakpoint is set at next nearest instruction at line number "<<lg<<endl;
         return;
       }
     }
+
+    cout<<"No Instruction at line number " <<lineN<<endl;
 
 }
 void deleteBreakPoint(int lineN){
@@ -36,10 +38,24 @@ void deleteBreakPoint(int lineN){
         return;
       }
     }
+    std::cout<<"No Breakpoint to delete at line number "<<lineN<<endl;
 }
 bool IsbreakPoint(int instr){
   if( breakpoints.find(instr) != breakpoints.end()){
     return true;
   }
   return false;
+}
+
+void showBreakpoints(){
+  if(breakpoints.size()){
+  cout<<"Break points are located at line numbers:";
+  for( auto i : breakpoints){
+    cout<<LineNumber[i]<<" ";
+  }
+  cout<<endl;
+  }else{
+    cout<<"No break points"<<endl;
+  }
+
 }

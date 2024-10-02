@@ -29,7 +29,7 @@ bitset<64> MemoryClass::ReadData(int n, unsigned int address) {
       return a;
     }
 
-  } else if (address >= 0x10000 && address < 0x10000) {
+  } else if (address >= 0x10000 && address < 0x20000) {
     if (address + n <= 0x20000) {
       return dataSectionstart.readData(n, address - 0x10000);
     } else {
@@ -112,7 +112,7 @@ void MemoryClass::WriteData(int n, unsigned int address, bitset<64> value) {
       dataSectionstart.writeData(r, 0, b);
     }
 
-  } else if (address >= 0x10000 && address < 0x10000) {
+  } else if (address >= 0x10000 && address < 0x20000) {
     if (address + n <= 0x20000) {
       dataSectionstart.writeData(n, address - 0x10000, value);
     } else {
@@ -206,7 +206,6 @@ void MemoryClass::writeData(int n, long int value) {
 
 
 void  MemoryClass::printMemory( int n , unsigned int address){
-
  if (address >= 0 && address < 0x10000) {
     if (address + n <= 0x10000) {
        textSectionstart.printMemmory(n, address);
@@ -217,7 +216,7 @@ void  MemoryClass::printMemory( int n , unsigned int address){
      
     }
 
-  } else if (address >= 0x10000 && address < 0x10000) {
+  } else if (address >= 0x10000 && address < 0x20000) {
     if (address + n <= 0x20000) {
       dataSectionstart.printMemmory(0x10000,n, address-0x10000);
     } else {

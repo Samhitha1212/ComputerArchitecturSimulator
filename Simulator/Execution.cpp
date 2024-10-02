@@ -1,11 +1,12 @@
-#pragma once
 #include<vector>
 #include<string>
+#include <bitset>
 #include "globalvars.h"
 #include "registers.h"
 #include "memory.h"
 #include "operation_map.h"
 #include "ErrorHandling.h"
+#include "StackDetails.h"
 using namespace std;
 
 void executeRType(int n){
@@ -86,8 +87,9 @@ void executeRType(int n){
       RegisterFile.writeReg(regDetails[arg[n][1]], b);
     }
   }
-  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
+  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
   PC = PC +4;
+  currentInstruction++;
 }
 
 void executeIType(int n){
@@ -231,16 +233,20 @@ void executeIType(int n){
     long int rs1= static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]] ).to_ulong());
     rs1+=imm;
     RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
-    PC+=rs1;
+    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); PC = 0x"<<hex<<PC<<endl;
+    PC=rs1;
+    PopfromStack(rs1);
+    currentInstruction=PC/4;
     return ;
   }
-  if(Details[arg[n][0]].opcode == 0010011){
-    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
+  if(Details[arg[n][0]].opcode ==  bitset<7>("0010011")){
+    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
   }
   else{
-    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); PC"<<PC<<endl;
+    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); PC = 0x"<<hex<<PC<<endl;
   }
   PC = PC +4;
+  currentInstruction++;
 }
 
 void executeSType(int n){
@@ -273,40 +279,54 @@ void executeSType(int n){
        Memory.WriteData(8, addr, value);
     }
   }
-  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); PC"<<PC<<endl;
+  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); PC = 0x"<<hex<<PC<<endl;
   PC = PC + 4;
+  currentInstruction++;
 }
 
 void executeBType(int n){
+    int imm=0;
+    if(IsValidLabel(arg[n][3],false)){
+      imm = Labels[arg[n][3]]-n;
+      imm *= 4;
+    }else if(IsValidImmediate(arg[n][3],false)){
+      imm=convertToInt(arg[n][3]);
+    }
   if (arg[n][0] == "beq") {
     if (RegisterFile.readReg(regDetails[arg[n][1]]) ==
         RegisterFile.readReg(regDetails[arg[n][2]])) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
-      PC += convertToInt(arg[n][3]);
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      PC += imm;
+      currentInstruction=PC/4;
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
       PC += 4;
+      currentInstruction++;
     }
 
-  } else if (arg[n][0] == "bneq") {
+  } else if (arg[n][0] == "bne") {
     if (RegisterFile.readReg(regDetails[arg[n][1]]) !=
         RegisterFile.readReg(regDetails[arg[n][2]])) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
-      PC += convertToInt(arg[n][3]);
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      PC += imm;
+      currentInstruction=PC/4;
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
       PC += 4;
+      currentInstruction++;
     }
   } else if (arg[n][0] == "blt") {
     if (static_cast<long int>(
             RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) <
         static_cast<long int>(
             RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
-      PC += convertToInt(arg[n][3]);
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      PC += imm;
+      currentInstruction=PC/4;
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
       PC += 4;
+      currentInstruction++;
     }
 
   } else if (arg[n][0] == "bge") {
@@ -314,30 +334,36 @@ void executeBType(int n){
             RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) >=
         static_cast<long int>(
             RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
-      PC += convertToInt(arg[n][3]);
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      PC += imm;
+      currentInstruction=PC/4;
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
       PC += 4;
+      currentInstruction++;
     }
   } else if (arg[n][0] == "bltu") {
     if ((RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) <
         (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
-      PC += convertToInt(arg[n][3]);
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      PC += imm;
+      currentInstruction=PC/4;
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
       PC += 4;
+      currentInstruction++;
     }
 
   } else if (arg[n][0] == "bgeu") {
     if ((RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) >=
         (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
-      PC += convertToInt(arg[n][3]);
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      PC += imm;
+      currentInstruction=PC/4;
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC"<<PC<<endl;
+      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
       PC += 4;
+      currentInstruction++;
     }
   }
 }
@@ -346,15 +372,17 @@ void executeJType(int n){
     if( arg[n][0] =="jal"){
     int imm=0;
     if(IsValidLabel(arg[n][2],false)){
-      imm = Labels[arg[n][2]].first-n;
+      imm = Labels[arg[n][2]]-n;
       imm *= 4;
+      PushIntoStack(arg[n][2],LineNumber[n],PC+4);
     }else if(IsValidImmediate(arg[n][2],false)){
       imm=convertToInt(arg[n][2]);
     }
 
     RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
-    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2];
+    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<"; PC = 0x"<<hex<<PC<<endl;
     PC+=imm;
+    currentInstruction=PC/4;
   }
 }
 
@@ -369,11 +397,13 @@ void executeUType(int n){
     imm = imm << 12;
     RegisterFile.writeReg( regDetails[ arg[n][1]] , PC+imm);
   }
-  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2];
+  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<"; PC = 0x"<<hex<<PC<<endl;;
   PC+=4;
+  currentInstruction++;
 }
 
 void ExecuteInstruction(int n){
+  functionStack.back().line=LineNumber[n];
   if(Details[arg[n][0]].FMT == 'R'){
     executeRType(n);
   } 
@@ -392,4 +422,20 @@ void ExecuteInstruction(int n){
   else if(Details[arg[n][0]].FMT == 'U'){
     executeUType(n);
   }
+}
+
+void InitializeTotalData(){
+    Memory=MemoryClass();
+    RegisterFile=RegisterFileClass();
+    for(int i=0 ; i<N; i++){
+        arg[i].clear();
+    }
+    Labels.clear();
+    LineNumber.clear();
+    instructions=0;
+    PC=0;
+    currentInstruction=0;
+    breakpoints.clear();
+    functionStack.clear();
+    functionStack.push_back({string("main"),0});
 }

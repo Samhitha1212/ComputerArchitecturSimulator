@@ -10,10 +10,12 @@ MemoryClass Memory;
 RegisterFileClass RegisterFile;
 vector<string>
     arg[N]; // vector array to store the given assembly instructions arguments
-map<string, pair<int, int>> Labels;
+map<string,int> Labels;
 map<int, int> LineNumber;
+int instructions=0;
 unsigned int PC;
 unsigned int currentInstruction;
 set<int> breakpoints;
-std::stack<StackDetails> functionStack;
+std::vector<StackDetails> functionStack;
+
 
