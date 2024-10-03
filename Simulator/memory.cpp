@@ -36,10 +36,15 @@ bitset<32> textSectionClass::readInstruction(unsigned int pc) {
 void textSectionClass::writeData(int n, unsigned int address,
                                  bitset<64> value) {
   if (mem.size() - top <= n) {
-    mem.resize(top + 4 * S, 0);
+    if( top + 4 * S <= 0x10000){
+       mem.resize(top + 4 * S, 0);
+    }else{
+      mem.resize(0x10000,0);
+    }
+   
   }
   while (address + n - 1 >= mem.size()) {
-    mem.resize(address + n - 1, 0);
+    mem.resize(address + n , 0);
   }
   if (top < address + n) {
     top = address + n;
@@ -71,10 +76,14 @@ bitset<64> textSectionClass::readData(int n, unsigned int address) {
 void dataSectionClass::writeData(int n, unsigned int address,
                                  bitset<64> value) {
   if (mem.size() - top <= n) {
-    mem.resize(top + 4 * S, 0);
+      if( top + 4 * S <= 0x10000){
+       mem.resize(top + 4 * S, 0);
+    }else{
+      mem.resize(0x10000,0);
+    }
   }
   while (address + n - 1 >= mem.size()) {
-    mem.resize(address + n - 1, 0);
+    mem.resize(address + n , 0);
   }
   if (top < address + n) {
     top = address + n;
@@ -111,7 +120,11 @@ bitset<64> dataSectionClass::readData(int n, unsigned int address) {
 void stackSectionClass::writeData(int n, unsigned int address,
                                   bitset<64> value) {
   if (mem.size() - top <= n) {
-    mem.resize(top + 4 * S, 0);
+    if( top + 4 * S <= 0x10000){
+       mem.resize(top + 4 * S, 0);
+    }else{
+      mem.resize(0x10000,0);
+    };
   }
   while (address >= mem.size()) {
     mem.resize(address + 1, 0);
