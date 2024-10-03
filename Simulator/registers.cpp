@@ -16,8 +16,13 @@
   }
 
    void RegisterFileClass:: printRegs()const{
-    cout<<"Registers"<<endl;
-    for(int i=0; i<32;i++){
+    cout<<"Registers:"<<endl;
+    int i=0;
+    for(; i<10;i++){
+      cout<<"x"<<dec<<i;
+      cout<<"  = 0x"<<hex<<reg[i].to_ulong()<<endl;
+    }
+     for(; i<32;i++){
       cout<<"x"<<dec<<i;
       cout<<" = 0x"<<hex<<reg[i].to_ulong()<<endl;
     }

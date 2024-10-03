@@ -7,7 +7,21 @@
 #include "operation_map.h"
 #include "ErrorHandling.h"
 #include "Execution.h"
+#include "math.h"
 using namespace std;
+
+void printPC(){
+
+  int k=1;
+  if(PC){
+    k=log(PC)/log(16) +1;
+  }
+  cout<<"PC=0x";
+  for( int i=0; i<8-k ; i++){
+    cout<<0;
+  }
+  cout<<hex<<PC;
+}
 
 void executeRType(int n){
   if(arg[n][0] == "add"){
@@ -90,7 +104,9 @@ void executeRType(int n){
       RegisterFile.writeReg(regDetails[arg[n][1]], b);
     }
   }
-  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+  cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+  printPC();
+  cout<<endl;
   PC = PC +4;
   currentInstruction++;
 }
@@ -257,7 +273,9 @@ void executeIType(int n){
     long int ra= static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]] ).to_ulong());
     ra+=imm;
     RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
-    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); PC = 0x"<<hex<<PC<<endl;
+    cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); ";
+    printPC();
+    cout<<endl;
     PC=ra;
     PopfromStack(ra);
     currentInstruction=PC/4;
@@ -271,10 +289,14 @@ void executeIType(int n){
     return ;
   }
   if(Details[arg[n][0]].opcode ==  bitset<7>("0010011")){
-    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+    cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+    printPC();
+    cout<<endl;
   }
   else{
-    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); PC = 0x"<<hex<<PC<<endl;
+    cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); ";
+    printPC();
+    cout<<endl;
   }
   PC = PC +4;
   currentInstruction++;
@@ -322,7 +344,9 @@ void executeSType(int n){
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is trying to store to invalid Address.";
     }
   }
-  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); PC = 0x"<<hex<<PC<<endl;
+  cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][3]<<"("<<arg[n][2]<<"); ";
+  printPC();
+  cout<<endl;
   PC = PC + 4;
   currentInstruction++;
 }
@@ -338,7 +362,9 @@ void executeBType(int n){
   if (arg[n][0] == "beq") {
     if (RegisterFile.readReg(regDetails[arg[n][1]]) ==
         RegisterFile.readReg(regDetails[arg[n][2]])) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += imm;
       currentInstruction=PC/4;
       if(PC <0){
@@ -349,7 +375,9 @@ void executeBType(int n){
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is  passing  control to invalid instruction. (i.e trying to make PC bigger such that there is no instruction at that location  )";
       }
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += 4;
       currentInstruction++;
     }
@@ -357,7 +385,9 @@ void executeBType(int n){
   } else if (arg[n][0] == "bne") {
     if (RegisterFile.readReg(regDetails[arg[n][1]]) !=
         RegisterFile.readReg(regDetails[arg[n][2]])) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += imm;
       currentInstruction=PC/4;
        if(PC <0){
@@ -368,7 +398,9 @@ void executeBType(int n){
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is  passing  control to invalid instruction. (i.e trying to make PC bigger such that there is no instruction at that location  )";
       }
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += 4;
       currentInstruction++;
     }
@@ -377,7 +409,9 @@ void executeBType(int n){
             RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) <
         static_cast<long int>(
             RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += imm;
       currentInstruction=PC/4;
        if(PC <0){
@@ -388,7 +422,9 @@ void executeBType(int n){
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is  passing  control to invalid instruction. (i.e trying to make PC bigger such that there is no instruction at that location  )";
       }
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += 4;
       currentInstruction++;
     }
@@ -398,7 +434,9 @@ void executeBType(int n){
             RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) >=
         static_cast<long int>(
             RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += imm;
       currentInstruction=PC/4;
        if(PC <0){
@@ -409,14 +447,18 @@ void executeBType(int n){
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is  passing  control to invalid instruction. (i.e trying to make PC bigger such that there is no instruction at that location  )";
       }
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += 4;
       currentInstruction++;
     }
   } else if (arg[n][0] == "bltu") {
     if ((RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) <
         (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += imm;
       currentInstruction=PC/4;
        if(PC <0){
@@ -427,7 +469,9 @@ void executeBType(int n){
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is  passing  control to invalid instruction. (i.e trying to make PC bigger such that there is no instruction at that location  )";
       }
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += 4;
       currentInstruction++;
     }
@@ -435,7 +479,9 @@ void executeBType(int n){
   } else if (arg[n][0] == "bgeu") {
     if ((RegisterFile.readReg(regDetails[arg[n][1]]).to_ulong()) >=
         (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong())) {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += imm;
       currentInstruction=PC/4;
        if(PC <0){
@@ -446,7 +492,9 @@ void executeBType(int n){
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is  passing  control to invalid instruction. (i.e trying to make PC bigger such that there is no instruction at that location  )";
       }
     } else {
-      cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; PC = 0x"<<hex<<PC<<endl;
+      cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<", "<<arg[n][3]<<"; ";
+      printPC();
+      cout<<endl;
       PC += 4;
       currentInstruction++;
     }
@@ -465,7 +513,9 @@ void executeJType(int n){
     }
 
     RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
-    cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<"; PC = 0x"<<hex<<PC<<endl;
+    cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<"; ";
+    printPC();
+    cout<<endl;
     PC+=imm;
     currentInstruction=PC/4;
      if(PC <0){
@@ -510,7 +560,9 @@ void executeUType(int n){
     }
     RegisterFile.writeReg( regDetails[ arg[n][1]] , PC+k);
   }
-  cout<<"Executed: "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<"; PC = 0x"<<hex<<PC<<endl;;
+  cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<"; ";
+  printPC();
+  cout<<endl;;
   PC+=4;
   currentInstruction++;
 }

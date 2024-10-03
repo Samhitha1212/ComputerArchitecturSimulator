@@ -106,7 +106,7 @@ int main(){
             cout<<"Execution Completed"<<endl;
             functionStack.clear();
           }else{
-            cout<<"Execution stopped at Break point"<<endl;
+            cout<<"Execution stopped at Breakpoint"<<endl;
           }
         }else{
           cout<<"Nothing to run"<<endl;
@@ -168,13 +168,13 @@ int main(){
       }
       cout<<endl;
     }
-    else{
+    else if(input != "exit"){
       cout<<"Invalid command"<<endl;
       cout<<endl;
     }
 
   }while(input != "exit");
 
-  cout<<"Exiting the stimulator"<<endl;
+  cout<<"Exited the simulator"<<endl;
   return 0;
 }

@@ -25,9 +25,9 @@ void showStack(){
   }
   }else{
     if(IsFileloaded){
-      cout<<"Empty Call Stack : Execution Completed"<<endl;
+      cout<<"Empty Call Stack: Execution Completed"<<endl;
     }else{
-      cout<<"Empty Call Stack : No file loaded"<<endl;
+      cout<<"Empty Call Stack: No file loaded"<<endl;
     } 
   }
 }
