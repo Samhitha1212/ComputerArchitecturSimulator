@@ -52,7 +52,7 @@ void showBreakpoints(){
   if(breakpoints.size()){
   cout<<"Break points are located at line numbers:";
   for( auto i : breakpoints){
-    cout<<dec<<LineNumber[i]<<" ";
+    cout<<dec<<LineNumber[i]<<" , ";
   }
   }else{
     cout<<"No break points"<<endl;

@@ -507,17 +507,20 @@ void executeJType(int n){
     if(IsValidLabel(arg[n][2],false)){
       imm = Labels[arg[n][2]]-n;
       imm *= 4;
-      PushIntoStack(arg[n][2],LineNumber[n],PC+4);
+      
     }else if(IsValidImmediate(arg[n][2],false)){
       imm=convertToInt(arg[n][2]);
     }
-
+    unsigned int temp=PC;
     RegisterFile.writeReg( regDetails[arg[n][1]] ,PC+4);
     cout<<"Executed "<<arg[n][0]<<" "<<arg[n][1]<<", "<<arg[n][2]<<"; ";
     printPC();
     cout<<endl;
     PC+=imm;
     currentInstruction=PC/4;
+    if(IsValidLabel(arg[n][2],false)){
+      PushIntoStack(arg[n][2],LineNumber[currentInstruction-1],temp+4);
+    }
      if(PC <0){
       IsRuntimeErr=true;
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is  passing  control to invalid instruction. (i.e trying to make PC negative)";

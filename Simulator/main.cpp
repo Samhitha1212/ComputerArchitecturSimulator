@@ -26,6 +26,7 @@ int main(){
       }
       else{
         IsFileloaded = true;
+        functionStack.back().line=LineNumber[0]-1;
       }
       cout<<endl;
     }
@@ -99,14 +100,16 @@ int main(){
       if(IsFileloaded){
         if(!IsRuntimeErr){
            if(currentInstruction<instructions && currentInstruction>=0){
-          for(; !IsbreakPoint(currentInstruction) && currentInstruction < instructions ; ){
+          for(; !IsbreakPoint(currentInstruction) && currentInstruction < instructions && !IsRuntimeErr; ){
             ExecuteInstruction(currentInstruction);
           }
           if(currentInstruction >= instructions){
             cout<<"Execution Completed"<<endl;
             functionStack.clear();
-          }else{
+          }else if(!IsRuntimeErr){
             cout<<"Execution stopped at Breakpoint"<<endl;
+          }else {
+           cout<<"Encountered run time error can not run further"<<endl;
           }
         }else{
           cout<<"Nothing to run"<<endl;

@@ -68,9 +68,19 @@ bool IsvalidIandR(string s,int linenumber){
 /*Checks whether the given imm is a valid imm value for the instruction
 e.g. -12 or abc34 or 672597 are valid imm but 34,567 is not a valid imm*/
 bool IsValidImmediate(string s, bool flag){
-
-  if(s[0] == '0' && s[1] == 'x'){
+  if(s[0] == '0' && s[1] == 'x' ){
     for(int i=2; i<s.length(); i++){
+      if( (s[i] >= '0' && s[i] <= '9' ) || (s[i] >= 'a' && s[i] <= 'f' ) || (s[i] >= 'A' && s[i] <= 'F')){
+
+      }
+      else{
+        if(flag)
+        cout<<s<<" is not recognised"<<endl;
+        return false;
+      }  
+    }
+  }else if( s[0] == '-' && s[1] == '0' && s[2]=='x'){
+    for(int i=3; i<s.length(); i++){
       if( (s[i] >= '0' && s[i] <= '9' ) || (s[i] >= 'a' && s[i] <= 'f' ) || (s[i] >= 'A' && s[i] <= 'F')){
 
       }

@@ -81,8 +81,18 @@ bool IsValidImmediate(string s, bool flag){
         return false;
       }  
     }
-  }
-  else{
+  }else if(s[0] == '-' && s[1] == '0' && s[2]=='x'){
+    for(int i=3; i<s.length(); i++){
+      if( (s[i] >= '0' && s[i] <= '9' ) || (s[i] >= 'a' && s[i] <= 'f' ) || (s[i] >= 'A' && s[i] <= 'F')){
+
+      }
+      else{
+        if(flag)
+        cout<<s<<" is not recognised"<<endl;
+        return false;
+      }  
+    }
+  }else{
     int i=0;
     if(s[0] == '-' || s[0] == '+'){
       i++;
