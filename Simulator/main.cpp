@@ -1,10 +1,7 @@
 #include "globalvars.h"
-#include "loadfile.h"
 #include "Execution.h"
 #include "operation_map.h"
 #include "ErrorHandling.h"
-#include "breakpoints.h"
-#include "StackDetails.h"
 #include <iostream>
 #include <string>
 #include<regex>
@@ -23,7 +20,6 @@ int main(){
     regex memory(R"(mem\s*(0x[0-9A-Fa-f]+|\d+)\s*(\d+))");
     if(regex_match(input, match, load)){
       InitializeTotalData();
-      loadfile(match[1]);
       if(loadfile(match[1])){
         cout<<"Error in the file "<<match[1]<<" : File not loaded"<<endl;
         InitializeTotalData();
@@ -101,7 +97,8 @@ int main(){
     }
     else if(input == "run"){
       if(IsFileloaded){
-        if(currentInstruction<instructions){
+        if(!IsRuntimeErr){
+           if(currentInstruction<instructions && currentInstruction>=0){
           for(; !IsbreakPoint(currentInstruction) && currentInstruction < instructions ; ){
             ExecuteInstruction(currentInstruction);
           }
@@ -115,6 +112,10 @@ int main(){
           cout<<"Nothing to run"<<endl;
           cout<<"Execution Completed"<<endl;
         }
+        }else{
+        cout<<"Encountered run time error can not run further"<<endl;
+        }
+       
       }
       else{
         cout<<"ERROR : No file loaded"<<endl;
@@ -123,16 +124,21 @@ int main(){
     }
     else if(input == "step"){
       if(IsFileloaded){
-        if(currentInstruction<instructions){
-          ExecuteInstruction(currentInstruction);
-          if(currentInstruction>instructions){
+        if(!IsRuntimeErr){
+          if(currentInstruction<instructions && currentInstruction>=0){
+            ExecuteInstruction(currentInstruction);
+            if(currentInstruction>instructions){
+              cout<<"Execution Completed"<<endl;
+              functionStack.clear();
+            }
+          }else{
+            cout<<"Nothing to step"<<endl;
             cout<<"Execution Completed"<<endl;
-            functionStack.clear();
           }
         }else{
-          cout<<"Nothing to step"<<endl;
-          cout<<"Execution Completed"<<endl;
+        cout<<"Encountered run time error can not run further"<<endl;
         }
+     
       }
       else{
         cout<<"ERROR : No file loaded"<<endl;
@@ -148,10 +154,19 @@ int main(){
     else if(input == "regs"){
       RegisterFile.printRegs();
     }else if(input == "show-stack"){
-      showStack();
+      if(IsFileloaded){
+        showStack();
+      }else{
+        cout<<"ERROR : No file loaded"<<endl;
+      }
       cout<<endl;
     }else if(input == "show break points"){
-      showBreakpoints();
+       if(IsFileloaded){
+         showBreakpoints();
+      }else{
+        cout<<"ERROR : No file loaded"<<endl;
+      }
+      cout<<endl;
     }
     else{
       cout<<"Invalid command"<<endl;

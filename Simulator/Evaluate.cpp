@@ -6,7 +6,7 @@
 using namespace std;
 
 /*it checks whether the given imm value is in the range of imm value of the given instruction or not*/
-bool valid_imm(int imm, int n_bits, int even){         
+bool valid_imm(long int imm, int n_bits, int even){         
   int t = pow(2, n_bits-1);
   if(even == 0){
     if(imm <= t-1 && imm >= -t){

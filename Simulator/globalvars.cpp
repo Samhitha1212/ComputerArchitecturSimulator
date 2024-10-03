@@ -1,6 +1,6 @@
 #include "memory.h"
 #include "registers.h"
-#include "StackDetails.h"
+#include "Execution.h"
 #include <map>
 #include <stack>
 #include <vector>
@@ -17,6 +17,7 @@ unsigned int PC;
 unsigned int currentInstruction;
 set<int> breakpoints;
 std::vector<StackDetails> functionStack;
-bool Isfileloaded = false;
+bool IsFileloaded = false;
+bool IsRuntimeErr=false;
 
 

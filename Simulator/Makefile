@@ -1,17 +1,14 @@
-riscv_asm: main.o Evaluate.o operation_map.o ErrorHandling.o
-	g++ main.o Evaluate.o operation_map.o ErrorHandling.o -o riscv_asm
+CXX :=g++
 
-main.o: main.cpp FMT.h operation_map.h ErrorHandling.h
-	g++ -c main.cpp
+srcfiles:=$(wildcard ./*.cpp)
+objfiles:=$(patsubst ./%.cpp,./%.o, $(srcfiles))
 
-Evaluate.o: Evaluate.cpp FMT.h operation_map.h
-	g++ -c Evaluate.cpp
 
-operation_map.o: operation_map.cpp operation_map.h
-	g++ -c operation_map.cpp
+riscv_sim: $(objfiles) 
+	$(CXX) $^ -o $@
 
-ErrorHandling.o: ErrorHandling.cpp ErrorHandling.h
-	g++ -c ErrorHandling.cpp
-	
+./%.o:./%.cpp FMT.h operation_map.h ErrorHandling.h Execution.h globalvars.h memory.h register.h 
+	$(CXX) -c $^ -o $@ 
+
 clean:
-	rm -f *.o riscv_asm
+	rm $(objfiles) riscv_sim

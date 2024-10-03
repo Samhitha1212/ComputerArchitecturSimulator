@@ -2,7 +2,10 @@
 #include <iostream>
 
 void MemoryClass::writeInstruction(string s) {
-  textSectionstart.writeInstruction(s);
+  if(textSectionstart.top +4 <= 0x10000){
+     textSectionstart.writeInstruction(s);
+  }
+ 
 }
 bitset<32> MemoryClass::readInstruction(unsigned int pc) {
   if (pc >= 0 && pc < 0x10000) {

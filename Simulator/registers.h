@@ -11,7 +11,5 @@ class RegisterFileClass{
   bitset<64> readReg(int n) const;
   void writeReg(int n, bitset<64> value);
   void printRegs()const;
-
-
 };
 

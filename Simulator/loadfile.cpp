@@ -39,7 +39,7 @@ bool loadfile( string filename){
           } else if (s[i] == ':') {
             string a=arg[instructions].back();
             if(IsValidLabel(a,false)){
-              cout<<"ERROR:At line Number "<<linenumber<<" label: "<<a<<" already exists"<<endl;
+              cout<<"ERROR:At line Number "<<dec<<linenumber<<" label: "<<a<<" already exists"<<endl;
               error = true;
             }
             Labels[a] = instructions;
@@ -55,7 +55,7 @@ bool loadfile( string filename){
 
             if (s[i] == ':') {
               if(IsValidLabel(temp,false)){
-              cout<<"ERROR:At line Number "<<linenumber<<" label: "<<temp<<" already exists"<<endl;
+              cout<<"ERROR:At line Number "<<dec<<linenumber<<" label: "<<temp<<" already exists"<<endl;
               error = true;
             }
               Labels[temp] = instructions;
@@ -81,7 +81,7 @@ bool loadfile( string filename){
           //find 1 st word
           
           string temp;
-          for(int i=0; i<s.length();i++){
+          for(int i=0; i<s.length(); i++){
             if(s[i] == ';') {
               break;
             }else if(s[i] != ' ' && s[i] != ',') {
@@ -100,6 +100,16 @@ bool loadfile( string filename){
               nb = 2;
             }else if( temp ==".byte"){
               nb = 1;
+            }else{
+              if(IsValidImmediate(temp,false)){
+                cout<<"Error: At line number "<<dec<<linenumber<<" Invalid format for .data segment "<<endl;
+                cout<<"Missing key word like .dword , .word , .half , .byte"<<endl;
+              }else{
+                cout<<"Error: At line number "<<dec<<linenumber<<" Invalid format for .data segment "<<endl;
+                cout<<temp<<" is not a valid key word in .data section"<<endl;
+              }
+              error=true;
+              break;
             }
             temp="";
             while( i<s.length()){
@@ -109,9 +119,26 @@ bool loadfile( string filename){
                   i++;
 
                 }while (i < s.length() && s[i] != ' ' && s[i] != ',' && s[i] != ';' );
-                long int num = convertToInt(temp);
-                Memory.writeData(nb,num);
-                temp="";
+                if(temp != ""){
+                  if(IsValidImmediate(temp,true)){
+                  
+                  long int num = convertToInt(temp);
+                  if(valid_imm(num,nb*8,false)){
+                     Memory.writeData(nb,num);
+                  }else{
+                  error=true;
+                  cout<<"Error: At line number :"<<dec<<linenumber<<"The immediate "<<temp<<" does not fit in "<<dec<<nb<<" bytes."<<endl;
+                  break;
+                  }
+                 
+                  }else{
+                    error=true;
+                    cout<<"Error: At line number :"<<dec<<linenumber<<" Invalid Immediate format"<<endl;
+                    break;
+                  }
+                 temp="";
+                }
+               
 
                 if(s[i]==';'){
                   i--;
@@ -134,7 +161,7 @@ bool loadfile( string filename){
       if(it->second < instructions){
         break;
       }else{
-        cout<<"ERROR:At line number: "<<LineNumber[it->second]<<" label: "<<it->first<<" does not map to any instruction"<<endl;
+        cout<<"ERROR:At line number: "<<dec<<LineNumber[it->second]<<" label: "<<it->first<<" does not map to any instruction"<<endl;
         error = true;
       }
     }
@@ -142,11 +169,11 @@ bool loadfile( string filename){
     for (int j = 0; j < instructions; j++) {
 
       if (!IsValidOperation(arg[j][0])) {
-        cout << "ERROR:Invalid Operation at LineNumber: "<<LineNumber[j] << endl;
+        cout << "ERROR:Invalid Operation at LineNumber: "<<dec<<LineNumber[j] << endl;
         error = true;
         continue; // break??
       } else if (!(IsValidRegeister(arg[j][1]))) {
-        cout << "ERROR:Invalid Register at LineNumber: "<<LineNumber[j] << endl;
+        cout << "ERROR:Invalid Register at LineNumber: "<<dec<<LineNumber[j] << endl;
         error = true;
         continue;
       } else {
@@ -156,7 +183,7 @@ bool loadfile( string filename){
             continue;
           }
           if(!(IsValidRegeister(arg[j][2]) && IsValidRegeister(arg[j][3]))) {
-            cout << "ERROR:Invalid Register at LineNumber: "<<LineNumber[j]<< endl;
+            cout << "ERROR:Invalid Register at LineNumber: "<<dec<<LineNumber[j]<< endl;
             error = true;
             continue;
           }
@@ -174,13 +201,13 @@ bool loadfile( string filename){
               continue;
             }
             if (!IsValidImmediate(arg[j][3],true)) {
-              cout << "ERROR:Invalid Immediate Value at LineNumber: "<<LineNumber[j] << endl;
+              cout << "ERROR:Invalid Immediate Value at LineNumber: "<<dec<<LineNumber[j] << endl;
               error = true;
               continue;
             }
             int n = convertToInt(arg[j][3]);
             if (!(IsValidRegeister(arg[j][2]))) {
-              cout << "ERROR:Invalid Register at LineNumber: "<<LineNumber[j]<< endl;
+              cout << "ERROR:Invalid Register at LineNumber: "<<dec<<LineNumber[j]<< endl;
               error = true;
               continue;
             }
@@ -192,7 +219,7 @@ bool loadfile( string filename){
               k=6;
             }
           if(t ==""){
-            cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"ERROR:Invalid Immediate at LineNumber: "<<dec<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
             error = true;
           }else{
@@ -214,13 +241,13 @@ bool loadfile( string filename){
               string num = seperateImmediate(arg[j][2]);
               arg[j].push_back(num);
               if (!IsValidImmediate(num ,true)) {
-                cout << "ERROR:Invalid Immediate Value at LineNumber: "<<LineNumber[j] << endl;
+                cout << "ERROR:Invalid Immediate Value at LineNumber: "<<dec<<LineNumber[j] << endl;
                 error = true;
                 continue;
               }
               int n = convertToInt(num);
               if (!(IsValidRegeister(arg[j][2]))) {
-                cout << "ERROR:Invalid Register at LineNumber: "<<LineNumber[j]<< endl;
+                cout << "ERROR:Invalid Register at LineNumber: "<<dec<<LineNumber[j]<< endl;
                 error = true;
                 continue;
              }
@@ -229,7 +256,7 @@ bool loadfile( string filename){
             string t=I.gethexInstruction();
             int k=12;
             if(t ==""){
-              cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
+              cout<<"ERROR:Invalid Immediate at LineNumber: "<<dec<<LineNumber[j]<< endl;
               cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
               error = true;
             }else{
@@ -251,13 +278,13 @@ bool loadfile( string filename){
           string num = seperateImmediate(arg[j][2]);
           arg[j].push_back(num);
           if (!IsValidImmediate(num,true)) {
-            cout << "ERROR:Invalid Immediate Value at LineNumber: "<<LineNumber[j]<< endl;
+            cout << "ERROR:Invalid Immediate Value at LineNumber: "<<dec<<LineNumber[j]<< endl;
             error = true;
             continue;
           }
           int n = convertToInt(num);
           if (!(IsValidRegeister(arg[j][2]))) {
-            cout << "ERROR:Invalid Register at LineNumber: "<<LineNumber[j]<< endl;
+            cout << "ERROR:Invalid Register at LineNumber: "<<dec<<LineNumber[j]<< endl;
             error = true;
             continue;
           }
@@ -266,7 +293,7 @@ bool loadfile( string filename){
           string t=I.gethexInstruction();
             int k=12;
           if(t ==""){
-            cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"ERROR:Invalid Immediate at LineNumber: "<<dec<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
             error = true;
           }else{
@@ -288,14 +315,14 @@ bool loadfile( string filename){
           }else if(IsValidImmediate(arg[j][3],false)){
             n=convertToInt(arg[j][3]);
           }else{
-            cout << "ERROR:Invalid Label or Immediate as 4th argument at LineNumber: "<<LineNumber[j]<< endl;
+            cout << "ERROR:Invalid Label or Immediate as 4th argument at LineNumber: "<<dec<<LineNumber[j]<< endl;
             cout<<arg[j][3]<<" is not recognised"<<endl;
             error = true;
             continue;
           }
                 
           if (!(IsValidRegeister(arg[j][2]))) {
-            cout << "ERROR:Invalid Register at LineNumber: "<<LineNumber[j]<< endl;
+            cout << "ERROR:Invalid Register at LineNumber: "<<dec<<LineNumber[j]<< endl;
             error = true;
             continue;
           }
@@ -304,7 +331,7 @@ bool loadfile( string filename){
           I.EvaluateInstruction();
           string t=I.gethexInstruction();
           if(t ==""){
-            cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"ERROR:Invalid Immediate at LineNumber: "<<dec<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" doesnot fits in 13 bits or not even"<<endl;
             error = true;
           }else{
@@ -319,7 +346,7 @@ bool loadfile( string filename){
             continue;
           }
           if (!IsValidImmediate(arg[j][2],true)) {
-            cout << "ERROR:Invalid Immediate Value at LineNumber: "<<LineNumber[j]<< endl;
+            cout << "ERROR:Invalid Immediate Value at LineNumber: "<<dec<<LineNumber[j]<< endl;
             error = true;
             continue;
           }
@@ -330,7 +357,7 @@ bool loadfile( string filename){
           string t=I.gethexInstruction();
             int k=20;
           if(t ==""){
-            cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"ERROR:Invalid Immediate at LineNumber: "<<dec<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" doesnot fits in "<<k<<" bits "<<endl;
             error = true;
           }else{
@@ -352,7 +379,7 @@ bool loadfile( string filename){
           }else if(IsValidImmediate(arg[j][2],false)){
             n=convertToInt(arg[j][2]);
           }else{
-            cout << "ERROR:Invalid Label or Immediate as 4th argument at LineNumber: "<<LineNumber[j]<< endl;
+            cout << "ERROR:Invalid Label or Immediate as 4th argument at LineNumber: "<<dec<<LineNumber[j]<< endl;
             cout<<arg[j][2]<<" is not recognised"<<endl;
             error = true;
             continue;
@@ -363,7 +390,7 @@ bool loadfile( string filename){
           string t=I.gethexInstruction();
           int k=21;
           if(t ==""){
-            cout<<"ERROR:Invalid Immediate at LineNumber: "<<LineNumber[j]<< endl;
+            cout<<"ERROR:Invalid Immediate at LineNumber: "<<dec<<LineNumber[j]<< endl;
             cout<<"Immediate value : "<<n<<" either doesnot fits in "<<k<<" bits or not even"<<endl;
             error = true;
           }else{

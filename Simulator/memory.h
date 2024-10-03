@@ -9,9 +9,10 @@ using namespace std;
 class textSectionClass {
 private:
   vector<bitset<8>> mem;
-  unsigned int top;
+  
 
 public:
+  unsigned int top;
   textSectionClass() : top(0) { mem.assign(4 * S, 0); }
   void writeInstruction(string s);
   bitset<32> readInstruction(unsigned int pc);

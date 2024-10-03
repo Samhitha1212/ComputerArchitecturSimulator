@@ -5,6 +5,8 @@
 #include <fstream>
 using namespace std;
 
+bool valid_imm(long int imm, int n_bits, int even);
+
 class InstructionInterface {     
 protected:
   bitset<32> Instruction;

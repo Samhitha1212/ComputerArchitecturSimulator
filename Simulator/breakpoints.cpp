@@ -1,11 +1,12 @@
-#include "breakpoints.h"
+#include "Execution.h"
+#include "globalvars.h"
 #include <iostream>
 
 void addBreakPoint( int lineN){
     for( auto it = LineNumber.begin(); it != LineNumber.end(); it++){
       if(it->second == lineN){
         breakpoints.insert(it->first);
-         std::cout<<"Breakpoint set at line "<<lineN<<endl;
+         std::cout<<"Breakpoint set at line "<<dec<<lineN<<endl;
         return;
       }
     }
@@ -18,12 +19,12 @@ void addBreakPoint( int lineN){
      for( auto it = LineNumber.begin(); it != LineNumber.end(); it++){
       if(it->second == lg){
         breakpoints.insert(it->first);
-        std::cout<<"No Instruction at line number " <<lineN<<" So Breakpoint is set at next nearest instruction at line number "<<lg<<endl;
+        std::cout<<"No Instruction at line number " <<dec<<lineN<<" So Breakpoint is set at next nearest instruction at line number "<<lg<<endl;
         return;
       }
     }
 
-    cout<<"No Instruction at line number " <<lineN<<endl;
+    cout<<"No Instruction at line number " <<dec<<lineN<<endl;
 
 }
 void deleteBreakPoint(int lineN){
@@ -31,14 +32,14 @@ void deleteBreakPoint(int lineN){
       if(it->second == lineN){
         if( breakpoints.find(it->first) != breakpoints.end()){
           breakpoints.erase(it->first);
-          std::cout<<"Breakpoint deleted at line number "<<lineN<<endl;
+          std::cout<<"Breakpoint deleted at line number "<<dec<<lineN<<endl;
         }else{
-          std::cout<<"No Breakpoint to delete at line number "<<lineN<<endl;
+          std::cout<<"No Breakpoint to delete at line number "<<dec<<lineN<<endl;
         }
         return;
       }
     }
-    std::cout<<"No Breakpoint to delete at line number "<<lineN<<endl;
+    std::cout<<"No Breakpoint to delete at line number "<<dec<<lineN<<endl;
 }
 bool IsbreakPoint(int instr){
   if( breakpoints.find(instr) != breakpoints.end()){
@@ -51,7 +52,7 @@ void showBreakpoints(){
   if(breakpoints.size()){
   cout<<"Break points are located at line numbers:";
   for( auto i : breakpoints){
-    cout<<LineNumber[i]<<" ";
+    cout<<dec<<LineNumber[i]<<" ";
   }
   }else{
     cout<<"No break points"<<endl;

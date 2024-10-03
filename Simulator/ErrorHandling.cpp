@@ -3,7 +3,7 @@
 using namespace std;
 
 long int convertToInt(string s) {
-  if (s[0] == '0' && s[1] == 'x') {
+  if (s[0] == '0' && s[1] == 'x' || s[0]=='-' && s[1] == '0' && s[2] == 'x') {
     return stol(s, 0, 16);
   } else {
     return stol(s);
@@ -58,10 +58,10 @@ bool IsvalidIandR(string s,int linenumber){
   if(e && f){
     return true;
   }else if( !e && !f){
-    cout<<"ERROR:At line Number: "<<linenumber<<" Invalid argument "<<s<<" (no paranthesis) "<<endl;
+    cout<<"ERROR:At line Number: "<<dec<<linenumber<<" Invalid argument "<<s<<" (no paranthesis) "<<endl;
     return false;
   }else {
-    cout<<"ERROR:At line Number: "<<linenumber<<" Invalid argument "<<s<<" (missing paranthesis) "<<endl;
+    cout<<"ERROR:At line Number: "<<dec<<linenumber<<" Invalid argument "<<s<<" (missing paranthesis) "<<endl;
     return false;
   }
 }
@@ -106,7 +106,7 @@ matches the actual number of instruction that should be present*/
 bool IsValidNoOfArguments(string operation,int required , int actual,int linenumber){
   if(required == actual)
   return true;
-  cout<<"ERROR:At linenumber: "<<linenumber<<" the "<<operation<<" expects "<<required<<" arguments but you gave "<<actual<<" arguments"<<endl;
+  cout<<"ERROR:At linenumber: "<<dec<<linenumber<<" the "<<operation<<" expects "<<dec<<required<<" arguments but you gave "<<dec<<actual<<" arguments"<<endl;
   return false;
 }
 
