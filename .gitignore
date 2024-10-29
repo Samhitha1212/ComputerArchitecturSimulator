@@ -31,5 +31,5 @@
 *.out
 *.app
 
-./Simulator/riscv_sim
-./Assembler/riscv_asm
+/Simulator/riscv_sim
+/Assembler/riscv_asm
