@@ -12,6 +12,7 @@ void executeSType(int);
 void executeBType(int);
 void executeJType(int);
 void executeUType(int);
+
 void InitializeTotalData();
 
 void addBreakPoint( int lineN);

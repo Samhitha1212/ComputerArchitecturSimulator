@@ -7,7 +7,8 @@
 #include "operation_map.h"
 #include "ErrorHandling.h"
 #include "Execution.h"
-#include "math.h"
+#include "cache_related.h"
+#include <math.h>
 using namespace std;
 
 void printPC(){
@@ -182,7 +183,7 @@ void executeIType(int n){
   else if(arg[n][0] == "lbu"){
     long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if( k >= 0 && k < 0x50000){
-      bitset<64> value = Memory.ReadData(1, k);
+      bitset<64> value = ReadData(1, k);
       RegisterFile.writeReg(regDetails[arg[n][1]], value);
     }else{
       IsRuntimeErr=true;
@@ -193,7 +194,7 @@ void executeIType(int n){
   else if(arg[n][0] == "lhu"){
      long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if( k >= 0 && k < 0x50000){
-      bitset<64> value = Memory.ReadData(2, k);
+      bitset<64> value = ReadData(2, k);
       RegisterFile.writeReg(regDetails[arg[n][1]], value);
     }else{
       IsRuntimeErr=true;
@@ -203,7 +204,7 @@ void executeIType(int n){
   else if(arg[n][0] == "lwu"){
     long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if( k >= 0 && k < 0x50000){
-      bitset<64> value = Memory.ReadData(4, k);
+      bitset<64> value = ReadData(4, k);
       RegisterFile.writeReg(regDetails[arg[n][1]], value);
     }else{
       IsRuntimeErr=true;
@@ -213,7 +214,7 @@ void executeIType(int n){
     else if(arg[n][0] == "lb"){
     long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if( k >= 0 && k < 0x50000){
-      bitset<64> value = Memory.ReadData(1, k);
+      bitset<64> value = ReadData(1, k);
       if(value[7]){
         for( int i = 8;i<64; i++){
           value[i]=1;
@@ -229,7 +230,7 @@ void executeIType(int n){
   else if(arg[n][0] == "lh"){
      long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if( k >= 0 && k < 0x50000){
-      bitset<64> value = Memory.ReadData(2, k);
+      bitset<64> value = ReadData(2, k);
         if(value[15]){
         for( int i = 16;i<64; i++){
           value[i]=1;
@@ -244,7 +245,7 @@ void executeIType(int n){
   else if(arg[n][0] == "lw"){
     long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if( k >= 0 && k < 0x50000){
-      bitset<64> value = Memory.ReadData(4, k);
+      bitset<64> value = ReadData(4, k);
         if(value[31]){
         for( int i = 32;i<64; i++){
           value[i]=1;
@@ -259,7 +260,7 @@ void executeIType(int n){
   else if(arg[n][0] == "ld"){
      long int k=static_cast<long int> (RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if( k >= 0 && k < 0x50000){
-      bitset<64> value = Memory.ReadData(8, k);
+      bitset<64> value = ReadData(8, k);
       RegisterFile.writeReg(regDetails[arg[n][1]], value);
     }else{
       IsRuntimeErr=true;
@@ -571,6 +572,7 @@ void executeUType(int n){
 }
 
 void ExecuteInstruction(int n){
+  Timer++;
   functionStack.back().line=LineNumber[n];
   if(Details[arg[n][0]].FMT == 'R'){
     executeRType(n);
@@ -608,4 +610,7 @@ void InitializeTotalData(){
     functionStack.push_back({string("main"),0});
     IsFileloaded =false;
     IsRuntimeErr=false;
+    Timer=0;
+    cacheStatastics.Reset();
+    cache=Cache();
 }

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 #include<regex>
-
+#include "cache.h"
 using namespace std;
 
 int main(){
@@ -177,6 +177,14 @@ int main(){
         cout<<"ERROR : No file loaded"<<endl;
       }
       cout<<endl;
+    }
+    else if(input=="cache"){
+      cache=Cache(256,1,16,ReplacementPolicy::LRU, WritePolicy::WB,true);
+      cout<<cache.blocksize<<endl;
+      cout<<cache.associativity<<endl;
+      cout<<cache.noOfEntries<<endl;
+    }else if(input=="cache_stats"){
+     cacheStatastics.Print();
     }
     else if(!regex_match(input, exit)){
       cout<<"Invalid command"<<endl;

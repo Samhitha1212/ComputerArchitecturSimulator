@@ -1,6 +1,7 @@
 #pragma once
-
+#include<iostream>
 #include <bitset>
+#include <iomanip>
 using namespace std;
 
 struct CacheStatastics{
@@ -12,7 +13,8 @@ struct CacheStatastics{
   }
 
   float hitRate(){
-    return hits/Accesses();
+    float hitrate=float(hits)/Accesses();
+    return hitrate;
   }
 
   void Reset(){
@@ -20,39 +22,14 @@ struct CacheStatastics{
     misses=0;
   }
 
+  void Print(){
+    std::cout.precision(4);
+    std::cout<<"D-cache statistics: Accesses="<<Accesses()<<", Hit="<<hits<<", Miss="<<misses<<", Hit Rate="<<hitRate()<<endl;
+  }
+
 };
 
 
-bitset<64> readData(int n, unsigned int address){
-
-  //check hit or miss
-
-
-  // if hit 
-    //read from cache
-
-
-  // if miss
-   // get the block from memory  
-   //place it in cache
-   // read from cache
-
-}
-
-
-void WriteData(int n,unsigned int  address, bitset<64> value){
-
-  //check hit or miss 
-
-  //if hit 
-    //write it in cache
-
-  //miss 
-  // get the block from memory  
- //place it in cache check replacement policy && with allocate
-  //write it in cache
-  //write through write back 
-
-}
-
+bitset<64> ReadData(int n, unsigned int address);
+void WriteData(int n,unsigned int  address, bitset<64> value);
 

@@ -8,6 +8,7 @@
 -  get block from memory - input 
 -  replacement policy set input - blockindex //change first access
 - write a block from cache to memory
+- function to create a cache class by reading config file
 
 ## memory class
 - 

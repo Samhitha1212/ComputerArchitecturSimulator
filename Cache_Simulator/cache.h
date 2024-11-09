@@ -1,64 +1,53 @@
 #pragma once
-
+#include "memory.h"
 #include <bitset>
 #include <map>
 #include <vector>
 using namespace std;
 
-enum class ReplacementPolicy { FIFO, LRU, RANDOM };
+enum class ReplacementPolicy { FIFO, LRU, RANDOM,LFU };
 enum class WritePolicy { WT, WB };
 
+struct Hitdetails{ 
+    bool IsHit;
+    bool IsSingleblock;
+    unsigned int cache_index;
+    unsigned char set_index;
+};
 
 struct AccessDetails{
-  int frequency;
-  int last_access;
-  int first_access;
-
-  AccessDetails(){
-    frequency=0;
-    first_access=-1;
-    last_access=-1;
-  }
+  unsigned int frequency;
+  unsigned int last_access;
+  unsigned int first_access;
+  AccessDetails():frequency(0),first_access(-1),last_access(-1){};
 };
 
 struct Block {
   bitset<8> *blockdata;
   AccessDetails accessDetails;
+  bool validBit;
+  bool dirtyBit;
+  unsigned int tag;
 
-  Block() {}
-  Block(int blocksize) { blockdata = new bitset<8>[blocksize]; }
+  Block():dirtyBit(false),validBit(false) { };
+  Block(int blocksize):dirtyBit(false),validBit(false) ,tag(0){
+     blockdata = new bitset<8>[blocksize];
+  }
 };
 
 struct Set {
   Block *set;
-
   Set(){}
-  Set(int associativity, int blocksize) {
+  Set(int associativity) {
     set = new Block[associativity];
-    for (int i = 0; i < associativity; i++) {
-      Block b(blocksize);
-      set[i] = b;
-    }
   }
 };
 
 class Cache {
 
-private:
-struct cacheData{
-  Set set;
-  bool validBit;
-  bool dirtyBit;
-  unsigned int tag;
+public:
 
-  cacheData(int associativity, int blocksize){
-    set=Set(associativity,  blocksize);
-    dirtyBit=false;
-    validBit=false;//true
-  }
-
-};
-  map<unsigned int, cacheData> cache;
+  map<unsigned int, Set> cache;
   ReplacementPolicy replacementPolicy;
   WritePolicy writePolicy;
   bool writeAllocate;
@@ -74,30 +63,15 @@ public:
         noOfEntries=cacheSize /(blocksize * associativity);
       }
 
-  void AddEntry(unsigned int address  ){
-   // index=address<<offset % no_of_entries
-   // cache[index] =  Cachedata((associativity,blocksize));
-   //
 
-  }
+  Hitdetails HitOrMiss(unsigned int address , int n);
+  Block getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer);
+  unsigned char AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer );
+  bitset<64> LoadDataFromCache(int n , unsigned int address ,unsigned int cache_index , unsigned char set_index );
+  unsigned char FindIndexForReplacement(unsigned int cache_index);
+
 };
 
 
-bitset<64> ReadData(int n , unsigned int address){
 
-  //hit or miss
-  //k=address/blocksize
-  //index=k%no_of_entries
-  //tag=k/no_of_entries
-
-
-
-
-
-  //hit
-
-  //miss
-
-
-}
 
