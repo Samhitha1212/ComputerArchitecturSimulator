@@ -23,6 +23,6 @@ std::vector<StackDetails> functionStack;
 bool IsFileloaded = false;
 bool IsRuntimeErr=false;
 CacheStatastics cacheStatastics;
-Cache cache;
+CacheInterface* cache;
 
 

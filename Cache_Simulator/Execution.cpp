@@ -612,5 +612,5 @@ void InitializeTotalData(){
     IsRuntimeErr=false;
     Timer=0;
     cacheStatastics.Reset();
-    cache=Cache();
+    cache=nullptr;
 }

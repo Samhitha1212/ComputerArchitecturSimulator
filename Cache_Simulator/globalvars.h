@@ -12,7 +12,7 @@
 
 extern RegisterFileClass RegisterFile;
 extern MemoryClass Memory;
-extern Cache cache;
+extern CacheInterface* cache;
 extern vector<string> arg[N]; // vector array to store the given assembly instructions arguments
 extern map<string, int> Labels;
 extern map<int, int> LineNumber;

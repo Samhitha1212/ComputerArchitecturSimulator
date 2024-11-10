@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Hitdetails Cache::HitOrMiss(unsigned int address , int n){
+Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
    // check whether it belongs to same block or not
   unsigned int reqaddress = address / blocksize;
   unsigned int reqaddress2 = (address+n-1) / blocksize;
@@ -21,7 +21,7 @@ Hitdetails Cache::HitOrMiss(unsigned int address , int n){
   }else{
     //if associativity ==0
     for (unsigned char i=0; i<associativity; i++){
-      Block b=cache[index].set[i];
+      Block b=cache.at(index).set[i];
       if(b.validBit && b.tag==tag){
         //hit
         return {true,true,index,i};
@@ -32,11 +32,9 @@ Hitdetails Cache::HitOrMiss(unsigned int address , int n){
 
   }
 
-  
-
 }
 
-  Block Cache:: getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer){
+  Block Cache:: getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer) const{
     Block b(blocksize);
     b.tag=(address/blocksize)/noOfEntries;
     b.validBit=true;
@@ -51,7 +49,7 @@ Hitdetails Cache::HitOrMiss(unsigned int address , int n){
     return b;
   }
 
-   unsigned char Cache::AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer ){ //miss
+   unsigned int Cache::AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer ){ //miss
    // index=address<<offset % no_of_entries
    unsigned int reqaddress=(address/blocksize);
    unsigned int index= reqaddress%noOfEntries;
@@ -63,17 +61,16 @@ Hitdetails Cache::HitOrMiss(unsigned int address , int n){
 
    // get block from Memory
    Block b=getBlock(reqaddress*blocksize,Memory,Timer);
-  //  unsigned char set_index= from replacement policy input -> index
-  unsigned char set_index = FindIndexForReplacement(index);
+  unsigned int set_index = FindIndexForReplacement(index);
   *(cache[index].set + set_index)=b;
   return set_index;
 
   }
 
-  bitset<64> Cache::LoadDataFromCache(int n , unsigned int address ,unsigned int cache_index , unsigned char set_index ){
+  bitset<64> Cache::LoadDataFromCache(int n , unsigned int address ,unsigned int cache_index , unsigned char set_index )const{
    //read n bytres from the block
    bitset<64> data=0;
-   Block b=cache[cache_index].set[set_index];
+   Block b=cache.at(cache_index).set[set_index];
    int dataindex=address%blocksize;
    for(int i=0;i<n;i++){
       bitset<8> byte= b.blockdata[dataindex+i];
@@ -84,8 +81,9 @@ Hitdetails Cache::HitOrMiss(unsigned int address , int n){
     return data;
   }
 
-  unsigned char Cache::FindIndexForReplacement(unsigned int cache_index){
-    Set s=cache[cache_index];
+  unsigned char Cache::FindIndexForReplacement(unsigned int cache_index)const{
+    Set s=cache.at(cache_index);
+  
     //check if associativity =0;
 
     for( int i=0; i<associativity;i++){
@@ -93,7 +91,7 @@ Hitdetails Cache::HitOrMiss(unsigned int address , int n){
           return i;
         }
     }
-    int k=0;
+    unsigned int k=0;
     switch (replacementPolicy)
     {
     case ReplacementPolicy::RANDOM:
