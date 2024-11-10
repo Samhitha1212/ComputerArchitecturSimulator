@@ -22,6 +22,7 @@ set<int> breakpoints;
 std::vector<StackDetails> functionStack;
 bool IsFileloaded = false;
 bool IsRuntimeErr=false;
+bool IsCacheEnabled = false;
 CacheStatastics cacheStatastics;
 CacheInterface* cache;
 

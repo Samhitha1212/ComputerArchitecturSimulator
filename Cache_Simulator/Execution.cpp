@@ -308,7 +308,7 @@ void executeSType(int n){
     bitset<64> value = RegisterFile.readReg(regDetails[arg[n][1]]);
     long int addr = static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if(addr >=0 && addr < 0x50000){
-       Memory.WriteData(1, addr, value);
+       WriteData(1, addr, value);
     }else{
       IsRuntimeErr=true;
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is trying to store to invalid Address.";
@@ -319,7 +319,7 @@ void executeSType(int n){
     bitset<64> value = RegisterFile.readReg(regDetails[arg[n][1]]);
     long int addr = static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if(addr >=0 && addr < 0x50000){
-       Memory.WriteData(2, addr, value);
+       WriteData(2, addr, value);
     }else{
       IsRuntimeErr=true;
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is trying to store to invalid Address.";
@@ -329,7 +329,7 @@ void executeSType(int n){
     bitset<64> value = RegisterFile.readReg(regDetails[arg[n][1]]);
     long int addr = static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if(addr >=0 && addr < 0x50000){
-       Memory.WriteData(4, addr, value);
+       WriteData(4, addr, value);
     }else{
       IsRuntimeErr=true;
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is trying to store to invalid Address.";
@@ -339,7 +339,7 @@ void executeSType(int n){
     bitset<64> value = RegisterFile.readReg(regDetails[arg[n][1]]);
     long int addr = static_cast<long int>(RegisterFile.readReg(regDetails[arg[n][2]]).to_ulong()) + convertToInt(arg[n][3]);
     if(addr >=0 && addr < 0x50000){
-       Memory.WriteData(8, addr, value);
+       WriteData(8, addr, value);
     }else{
       IsRuntimeErr=true;
       cout<<"RunTime Error: At line number "<<dec<<LineNumber[n]<<" instruction is trying to store to invalid Address.";
@@ -612,5 +612,5 @@ void InitializeTotalData(){
     IsRuntimeErr=false;
     Timer=0;
     cacheStatastics.Reset();
-    cache=nullptr;
+    cache = nullptr;
 }

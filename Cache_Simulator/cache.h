@@ -12,7 +12,7 @@ struct Hitdetails{
     bool IsHit;
     bool IsSingleblock;
     unsigned int cache_index;
-    unsigned char set_index;
+    unsigned int set_index;
 };
 
 struct AccessDetails{
@@ -57,9 +57,12 @@ class CacheInterface{
   virtual unsigned int AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer )=0;
   virtual bitset<64> LoadDataFromCache(int n , unsigned int address ,unsigned int cache_index , unsigned char set_index ) const {return 0;};
   virtual bitset<64> LoadDataFromCache(int n , unsigned int address ,unsigned int block_index ) const{return 0;} ;
-
-
-
+  virtual void writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int cache_index, unsigned int set_index){};
+  virtual void writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int block_index){};
+  virtual void updateDetails(unsigned int cache_index, unsigned int set_index, unsigned int Timer){};
+  virtual void updateDetails(unsigned int cache_index, unsigned int Timer){};
+  virtual void writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass Memory){};
+  virtual void writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass Memory){};
 };
 
 class Cache :public CacheInterface {
@@ -89,8 +92,10 @@ public:
   Block getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer)const override;
   unsigned int AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer ) override;
   bitset<64> LoadDataFromCache(int n , unsigned int address ,unsigned int cache_index , unsigned char set_index )const override;
-  unsigned char FindIndexForReplacement(unsigned int cache_index)const ;
-
+  void writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int cache_index, unsigned int set_index) override;
+  unsigned int FindIndexForReplacement(unsigned int cache_index)const ;
+  void updateDetails(unsigned int cache_index, unsigned int set_index, unsigned int Timer)override;
+  void writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass Memory)override;
 };
 
 class FullAssociativeCache: public CacheInterface{
@@ -111,10 +116,11 @@ class FullAssociativeCache: public CacheInterface{
     Hitdetails HitOrMiss(unsigned int address,int n)const override;
     Block getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer)const override;
     unsigned int AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer ) override;
-    virtual bitset<64> LoadDataFromCache(int n , unsigned int address ,unsigned int block_index ) const override;
+    bitset<64> LoadDataFromCache(int n , unsigned int address ,unsigned int block_index ) const override;
+    void writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int block_index)override;
     unsigned int FindIndexForReplacement()const ;
-
-  
+    void updateDetails(unsigned int cache_index, unsigned int Timer)override;
+    void writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass Memory)override;
 };
 
 

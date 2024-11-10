@@ -24,5 +24,6 @@ extern set<int> breakpoints;
 extern std::vector<StackDetails> functionStack;
 extern bool IsFileloaded;
 extern bool IsRuntimeErr;
+extern bool IsCacheEnabled;
 extern CacheStatastics cacheStatastics;
 

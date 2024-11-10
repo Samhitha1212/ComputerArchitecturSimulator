@@ -48,6 +48,13 @@ unsigned int FullAssociativeCache:: AddEntry(unsigned int address ,MemoryClass M
     cache.push_back(b);
   }else{ //need to replace existing block
     block_index=FindIndexForReplacement();
+    Block victim = cache[block_index];
+    if(victim.dirtyBit){
+      writeBlock(block_index, tag*blocksize, Memory);
+    }
+    if( victim.validBit){
+     delete [] victim.blockdata;
+    }
     cache[block_index]=b;
   }
 
@@ -66,6 +73,30 @@ bitset<64> FullAssociativeCache:: LoadDataFromCache(int n , unsigned int address
    }
     return data;
 
+}
+void FullAssociativeCache:: writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int block_index){
+  Block b = cache[block_index];
+  for(int i =0; i<n; i++){
+    for(int j=0; j<8; j++){
+      b.blockdata[i+address%blocksize][j] = value[j];
+    }
+  }
+
+  if(writePolicy == WritePolicy::WB){
+    cache[block_index].dirtyBit = 1;
+  }
+}
+
+void FullAssociativeCache::updateDetails(unsigned int block_index, unsigned int Timer){
+  cache[block_index].accessDetails.frequency++;
+  cache[block_index].accessDetails.last_access = Timer;
+}
+
+void FullAssociativeCache::writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass Memory){
+  Block b = cache[block_index];
+  for(int i=0; i<blocksize; i++){
+    Memory.WriteByte(start_address, b.blockdata[i]);
+  }
 }
 
 unsigned int FullAssociativeCache:: FindIndexForReplacement()const {

@@ -20,7 +20,7 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
      return {false,true,index,0};
   }else{
     //if associativity ==0
-    for (unsigned char i=0; i<associativity; i++){
+    for (unsigned int i=0; i<associativity; i++){
       Block b=cache.at(index).set[i];
       if(b.validBit && b.tag==tag){
         //hit
@@ -49,7 +49,7 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
     return b;
   }
 
-   unsigned int Cache::AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer ){ //miss
+  unsigned int Cache::AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer ){ //miss
    // index=address<<offset % no_of_entries
    unsigned int reqaddress=(address/blocksize);
    unsigned int index= reqaddress%noOfEntries;
@@ -58,10 +58,17 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
     Set set(associativity);
     cache[index]=set;
    }
-
    // get block from Memory
-   Block b=getBlock(reqaddress*blocksize,Memory,Timer);
+   Block b = getBlock(reqaddress*blocksize,Memory,Timer);
   unsigned int set_index = FindIndexForReplacement(index);
+  Block victim = cache[index].set[set_index];
+  if(victim.dirtyBit){
+    writeBlock(index, set_index, reqaddress*blocksize, Memory);
+  }
+  if( victim.validBit){
+     delete [] victim.blockdata;
+  }
+ 
   *(cache[index].set + set_index)=b;
   return set_index;
 
@@ -81,19 +88,16 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
     return data;
   }
 
-  unsigned char Cache::FindIndexForReplacement(unsigned int cache_index)const{
+  unsigned int Cache::FindIndexForReplacement(unsigned int cache_index)const{
     Set s=cache.at(cache_index);
-  
-    //check if associativity =0;
 
     for( int i=0; i<associativity;i++){
-        if(!s.set[i].validBit){
-          return i;
-        }
+      if(!s.set[i].validBit){
+        return i;
+      }
     }
     unsigned int k=0;
-    switch (replacementPolicy)
-    {
+    switch (replacementPolicy){
     case ReplacementPolicy::RANDOM:
       srand(time(0));
       return rand()%associativity;
@@ -132,4 +136,29 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
       break;
     }
 
+  }
+
+  void Cache::writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int cache_index, unsigned int set_index){
+   Block b=cache[cache_index].set[set_index];
+    for(int i =0; i<n; i++){
+      for(int j=0; j<8; j++){
+        b.blockdata[i+address%blocksize][j] = value[j];
+      }
+    }
+
+    if(writePolicy == WritePolicy::WB){
+      cache[cache_index].set[set_index].dirtyBit = 1;
+    }
+  }
+
+  void Cache::updateDetails(unsigned int cache_index, unsigned int set_index, unsigned int Timer){
+    cache[cache_index].set[set_index].accessDetails.last_access=Timer;
+    cache[cache_index].set[set_index].accessDetails.frequency++;
+  }
+
+  void Cache::writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass Memory){
+    Block b = cache[cache_index].set[set_index];
+    for(int i=0; i<blocksize; i++){
+      Memory.WriteByte(start_address, b.blockdata[i]);
+    }
   }
