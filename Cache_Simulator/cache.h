@@ -3,10 +3,23 @@
 #include <bitset>
 #include <map>
 #include <vector>
+#include <string>
 using namespace std;
 
-enum class ReplacementPolicy { FIFO, LRU, RANDOM,LFU };
+enum class ReplacementPolicy { FIFO , LRU , RANDOM,LFU };
 enum class WritePolicy { WT, WB };
+
+map<ReplacementPolicy,string> getReplacementPolicy{
+  {ReplacementPolicy::FIFO,"FIFO"},
+  {ReplacementPolicy::LRU,"LRU"},
+  {ReplacementPolicy::RANDOM,"RANDOM"},
+  {ReplacementPolicy::LFU,"LFU"}
+};
+
+map<WritePolicy,string> getWritePolicy{
+  {WritePolicy::WT,"WT"},
+  {WritePolicy::WB,"WB"}
+};
 
 struct Hitdetails{ 
     bool IsHit;
@@ -63,6 +76,12 @@ class CacheInterface{
   virtual void updateDetails(unsigned int cache_index, unsigned int Timer){};
   virtual void writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass Memory){};
   virtual void writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass Memory){};
+
+  virtual void InvalidateCacheEntries()=0;
+  virtual void writeDirtyBlocks(MemoryClass Memory)=0;
+
+  void PrintCacheConfig();
+  unsigned int CacheSize();
 };
 
 class Cache :public CacheInterface {
@@ -74,6 +93,7 @@ public:
 
 public:
   Cache() {}
+  ~Cache();
 
   Cache(int cacheSize, int associativity,int blocksize, ReplacementPolicy replacementPolicy, WritePolicy writePolicy,bool writeAllocate)
        {
@@ -96,13 +116,16 @@ public:
   unsigned int FindIndexForReplacement(unsigned int cache_index)const ;
   void updateDetails(unsigned int cache_index, unsigned int set_index, unsigned int Timer)override;
   void writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass Memory)override;
+  void InvalidateCacheEntries() override;
+  void writeDirtyBlocks(MemoryClass Memory) override;
 };
 
 class FullAssociativeCache: public CacheInterface{
   public:
   vector<Block> cache;
 
-  FullAssociativeCache(){}
+    FullAssociativeCache(){}
+    ~FullAssociativeCache();
     FullAssociativeCache(int cacheSize, int associativity,int blocksize, ReplacementPolicy replacementPolicy, WritePolicy writePolicy,bool writeAllocate)
        {
         this->blocksize=blocksize;
@@ -121,6 +144,8 @@ class FullAssociativeCache: public CacheInterface{
     unsigned int FindIndexForReplacement()const ;
     void updateDetails(unsigned int cache_index, unsigned int Timer)override;
     void writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass Memory)override;
+    void InvalidateCacheEntries() override;
+    void writeDirtyBlocks(MemoryClass Memory) override;
 };
 
 

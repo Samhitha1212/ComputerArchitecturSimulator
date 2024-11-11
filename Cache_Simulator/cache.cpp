@@ -90,6 +90,9 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
 
   unsigned int Cache::FindIndexForReplacement(unsigned int cache_index)const{
     Set s=cache.at(cache_index);
+    if(associativity==0){
+        return 0;
+    }
 
     for( int i=0; i<associativity;i++){
       if(!s.set[i].validBit){
@@ -162,3 +165,60 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
       Memory.WriteByte(start_address, b.blockdata[i]);
     }
   }
+
+
+Cache::~Cache(){
+
+  for( auto it: cache){
+    for( int i=0;i<associativity;i++){
+      if( it.second.set[i].validBit){
+        delete [] it.second.set[i].blockdata;
+      }
+    }
+    delete [] it.second.set;
+  }
+
+}
+
+void Cache::InvalidateCacheEntries() {
+   for( auto it: cache){
+    for( int i=0;i<associativity;i++){
+      if( it.second.set[i].validBit){
+        delete [] it.second.set[i].blockdata;
+      }
+    }
+    delete [] it.second.set;
+  }
+
+  cache.clear();
+
+}
+
+void Cache:: writeDirtyBlocks(MemoryClass Memory) {
+  for( auto it: cache){
+    for( int i=0;i<associativity;i++){
+      if(it.second.set[i].dirtyBit){
+        writeBlock(it.first,i,(it.second.set[i].tag*noOfEntries+it.first)*blocksize,Memory);
+      }
+    }
+  }
+}
+
+unsigned int CacheInterface::CacheSize(){
+    if(associativity){
+      return noOfEntries*associativity*blocksize;
+    }else{
+      return noOfEntries*blocksize;
+    }
+
+}
+
+ void CacheInterface::PrintCacheConfig(){
+
+  cout<<"Cache Size: "<<dec<<CacheSize()<<endl;
+  cout<<"Block Size: "<<dec<<blocksize<<endl;
+  cout<<"Associativity Size: "<<dec<<associativity<<endl;
+  cout<<"Replacement Policy: "<<getReplacementPolicy[replacementPolicy]<<endl;
+  cout<<"Write Back Policy: "<<getWritePolicy[writePolicy]<<endl;  
+
+ }

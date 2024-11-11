@@ -1,42 +1,41 @@
 ## 
 ## cache class
--  check hit or miss function - write to file.output file , modify cache statatics
--  get data from chace 
--  write entry to cache check write policy then write cache to memory
--  get data from memory to cache where ? replacement policy
--  write data from cache to memory
--  get block from memory - input 
--  replacement policy set input - blockindex //change first access
-- write a block from cache to memory
-- function to create a cache class by reading config file
+- [x] check hit or miss function - write to file.output file , modify cache statatics
+- [ ] add cache access details to file (file name is loadedfilename.out)
+- [x] get data from cache 
+- [x] write entry to cache check write policy then write cache to memory
+- [x] get data from memory to cache where ? replacement policy
+- [x] write data from cache to memory
+- [x] get block from memory - input 
+- [x] replacement policy set input - blockindex //change first access
+- [x] write a block from cache to memory
+- [ ] function to create a cache class by reading config file
+- [ ] function to dump cache data into file ( file name is given as argument in command its self)
+- [ ] Function to print Cache status
 
 ## memory class
-- 
-  - read byte 
-- 
-  - write byte
+- [x] read byte 
+- [x] write byte
 
 
 ## global functions
 
--  read data
--  write data
+- [x] read data
+- [x] write data
 
 ## 
-- 
-  - new struct for cache statatics
--  
-  - reset function
--  
-   - add another struct to block for replacement policies
+- [x] new struct for cache statatics
+- [x] reset function
+- [x] add another struct to block for replacement policies
 
 
 ## optional 
 
-- unaligned access
-- unevicted dirty blocks 
-- 
+- [ ] unaligned access
+- [ ] unevicted dirty blocks 
+  
 # remember
-- clear cache before new file loaded
-- cache commands when cache disable
-- when enable or disable
+- [ ] clear cache before new file loaded
+- [ ] cache commands when cache disable
+- [ ] when enable or disable
+- [ ] when cache disabled call cache destructor

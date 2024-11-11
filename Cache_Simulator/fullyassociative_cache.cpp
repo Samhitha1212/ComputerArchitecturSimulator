@@ -145,3 +145,28 @@ unsigned int FullAssociativeCache:: FindIndexForReplacement()const {
 
 }
 
+FullAssociativeCache::~FullAssociativeCache(){
+  for(auto block:cache){
+    if(block.validBit){
+       delete[] block.blockdata;
+    }
+  }
+}
+
+void FullAssociativeCache::InvalidateCacheEntries() {
+   for(auto block:cache){
+    if(block.validBit){
+       delete[] block.blockdata;
+    }
+   }
+    cache.clear();
+
+}
+void FullAssociativeCache:: writeDirtyBlocks(MemoryClass Memory) {
+  for(int i=0; i<cache.size();i++){
+      if(cache[i].dirtyBit){
+        writeBlock( i, cache[i].tag*blocksize , Memory );
+      }
+   }
+}
+
