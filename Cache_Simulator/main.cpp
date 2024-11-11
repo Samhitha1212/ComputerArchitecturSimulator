@@ -8,6 +8,7 @@
 #include <string>
 #include<regex>
 #include "cache.h"
+#include <fstream>
 using namespace std;
 
 int main(){
@@ -41,40 +42,46 @@ int main(){
       if(!IsCacheEnabled){
         cout<<"ERROR in opening the file "<< match_cacheConfig[1]<<". So cache is not enabled"<<endl;
       }
-    }
-
-    else if(regex_match(input, cache_statistics)){
-      if(IsFileloaded){
+    }else if(regex_match(input, cache_statistics)){
+      
         if(IsCacheEnabled){
           cacheStatastics.Print();
         }
         else{
           cout<<"Cache is not enabled"<<endl;
         }
-      }
+      
     }
 
     else if(regex_match(input, cache_status)){
       if(IsCacheEnabled){
+        cout<<"D-cache status: Enable"<<endl;
         cache->PrintCacheConfig();
+      }else{
+        cout<<"D-cache status: Disable"<<endl;
       }
     }
 
     else if(regex_match(input, cache_invalid)){
       if(IsCacheEnabled){
-        cache->InvalidateCacheEntries();
+        if(cache){
+          cache->writeDirtyBlocks(Memory);
+          cache->InvalidateCacheEntries();
+        }
       }
     }
 
     else if(regex_match(input, match_cacheDump, cache_dump)){
-      if(IsCacheEnabled){
-
+      if(IsCacheEnabled && IsFileloaded){
+          cache->dumpFile(match_cacheDump[1]);
       }
-    }
-
-
-
-      if(regex_match(input, match, load)){
+    }else if(regex_match(input,cache_disable)){
+      if(IsCacheEnabled ){
+          cache->InvalidateCacheEntries();
+          cache =nullptr;
+          IsCacheEnabled=false;
+      }
+    }else if(regex_match(input, match, load)){
         InitializeTotalData();
         if(loadfile(match[1])){
           cout<<"Error in the file "<<match[1]<<" : File not loaded"<<endl;
@@ -94,6 +101,8 @@ int main(){
           }
           out_file += ".output";
           output_file = out_file;
+          fstream f(output_file,std::ios::out |std::ios::trunc);
+          f.close();
           functionStack.back().line=LineNumber[0]-1;
         }
         cout<<endl;
@@ -172,6 +181,9 @@ int main(){
               ExecuteInstruction(currentInstruction);
             }
             if(currentInstruction >= instructions){
+              if(IsCacheEnabled){
+                cacheStatastics.Print();
+              }
               // cout<<"Execution Completed"<<endl;
               functionStack.clear();
             }else if(!IsRuntimeErr){
@@ -239,14 +251,14 @@ int main(){
         }
         cout<<endl;
       }
-      else if(input=="cache"){
-        cache = new Cache(1024,1,16,ReplacementPolicy::FIFO, WritePolicy::WT,false);
-        cout<<cache->blocksize<<endl;
-        cout<<cache->associativity<<endl;
-        cout<<cache->noOfEntries<<endl;
-      }else if(input=="cache_stats"){
-        cacheStatastics.Print();
-      }
+      // else if(input=="cache"){
+      //   cache = new Cache(1024,1,16,ReplacementPolicy::FIFO, WritePolicy::WT,false);
+      //   cout<<cache->blocksize<<endl;
+      //   cout<<cache->associativity<<endl;
+      //   cout<<cache->noOfEntries<<endl;
+      // }else if(input=="cache_stats"){
+      //   cacheStatastics.Print();
+      // }
       else if(!regex_match(input, exit)){
         cout<<"Invalid command"<<endl;
         cout<<endl;

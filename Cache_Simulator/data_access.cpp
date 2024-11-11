@@ -6,6 +6,7 @@
 using namespace std;
 
 bitset<64> ReadData(int n, unsigned int address) {
+  unsigned int tag ;
     if(!IsCacheEnabled){
       return Memory.ReadData(n, address);
     }
@@ -19,7 +20,7 @@ bitset<64> ReadData(int n, unsigned int address) {
       if(cache->associativity){
         h.set_index=cache->AddEntry(address,Memory,Timer);
       }else{
-         h.cache_index=cache->AddEntry(address,Memory,Timer);
+        h.cache_index=cache->AddEntry(address,Memory,Timer);
       }
     }else{
       cacheStatastics.hits++;
@@ -29,13 +30,20 @@ bitset<64> ReadData(int n, unsigned int address) {
         cache->updateDetails(h.cache_index, Timer);
       }
     }
+
+    if(cache->associativity){
+      addrAccess(output_file, 0, address, h.cache_index, h.IsHit, address/(cache->blocksize*cache->noOfEntries), cache->IsDirtyBlock(h.cache_index, h.set_index));
+    }
+    else{
+      addrAccess(output_file, 0, address, 0, h.IsHit, address/cache->blocksize, cache->IsDirtyBlock(h.cache_index, h.set_index));
+    }
    //now read data from appropriate block and send bitset<64>
     if(cache->associativity){
       return cache->LoadDataFromCache(n,address,h.cache_index,h.set_index);
     }else{
       return cache->LoadDataFromCache(n,address,h.cache_index);
     }
-    addrAccess(out, 0, address, h.cache_index, h.IsHit, address/cache->blocksize, cache->IsDirtyBlock(h.cache_index, h.set_index));
+    
   }
 
   void WriteData(int n, unsigned int address, bitset<64> value){
@@ -51,7 +59,13 @@ bitset<64> ReadData(int n, unsigned int address) {
         if(cache->writeAllocate == false){
           Memory.WriteData(n, address, value);
           cacheStatastics.misses++;
-          return ;
+          if(cache->associativity){
+            addrAccess(output_file, 1, address, h.cache_index, h.IsHit, address/(cache->blocksize*cache->noOfEntries), false);
+          }
+          else{
+            addrAccess(output_file, 1, address, 0, h.IsHit, address/cache->blocksize, false);
+          }
+          return;
         }
         else{
           if(cache->associativity){
@@ -89,7 +103,12 @@ bitset<64> ReadData(int n, unsigned int address) {
     else{
       Memory.WriteData(n, address, value);
     }
-    addrAccess(out, 0, address, h.cache_index, h.IsHit, address/cache->blocksize, cache->IsDirtyBlock(h.cache_index, h.set_index));
+    if(cache->associativity){
+      addrAccess(output_file, 1, address, h.cache_index, h.IsHit, address/(cache->blocksize*cache->noOfEntries), cache->IsDirtyBlock(h.cache_index, h.set_index));
+    }
+    else{
+      addrAccess(output_file, 1, address, 0, h.IsHit, address/cache->blocksize, cache->IsDirtyBlock(h.cache_index, h.set_index));
+    }
   }
 
 

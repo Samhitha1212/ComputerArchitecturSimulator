@@ -9,17 +9,9 @@ using namespace std;
 enum class ReplacementPolicy { FIFO , LRU , RANDOM,LFU };
 enum class WritePolicy { WT, WB };
 
-map<ReplacementPolicy,string> getReplacementPolicy{
-  {ReplacementPolicy::FIFO,"FIFO"},
-  {ReplacementPolicy::LRU,"LRU"},
-  {ReplacementPolicy::RANDOM,"RANDOM"},
-  {ReplacementPolicy::LFU,"LFU"}
-};
+extern map<ReplacementPolicy,string> getReplacementPolicy;
 
-map<WritePolicy,string> getWritePolicy{
-  {WritePolicy::WT,"WT"},
-  {WritePolicy::WB,"WB"}
-};
+extern map<WritePolicy,string> getWritePolicy;
 
 struct Hitdetails{ 
     bool IsHit;
@@ -64,6 +56,8 @@ class CacheInterface{
   unsigned int blocksize;
   unsigned int noOfEntries;
   unsigned int associativity;
+
+  virtual ~CacheInterface(){}
 
   virtual Hitdetails HitOrMiss(unsigned int address,int n) const=0;
   virtual Block getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer)const=0;

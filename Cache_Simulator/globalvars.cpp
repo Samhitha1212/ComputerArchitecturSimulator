@@ -8,6 +8,7 @@
 #include <set>
 #include "cache_related.h"
 #define N 100
+string output_file;
 MemoryClass Memory;
 RegisterFileClass RegisterFile;
 vector<string>

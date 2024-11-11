@@ -13,7 +13,13 @@ struct CacheStatastics{
   }
 
   float hitRate(){
-    float hitrate=float(hits)/Accesses();
+    float hitrate;
+    if(Accesses()){
+      hitrate=float(hits)/Accesses();
+    }else{
+      hitrate=-1;
+    }
+   
     return hitrate;
   }
 
@@ -24,7 +30,11 @@ struct CacheStatastics{
 
   void Print(){
     std::cout.precision(4);
-    std::cout<<"D-cache statistics: Accesses="<<Accesses()<<", Hit="<<hits<<", Miss="<<misses<<", Hit Rate="<<hitRate()<<endl;
+    std::cout<<"D-cache statistics: Accesses="<<dec<<Accesses()<<dec<<", Hit="<<dec<<hits<<dec<<", Miss="<<dec<<misses;
+    if(Accesses()){
+     cout<<", Hit Rate="<<hitRate();
+    }
+    cout<<endl;
   }
 
 };

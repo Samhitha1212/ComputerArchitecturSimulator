@@ -6,6 +6,17 @@
 #include "memory.h"
 
 using namespace std;
+map<ReplacementPolicy,string> getReplacementPolicy{
+  {ReplacementPolicy::FIFO,"FIFO"},
+  {ReplacementPolicy::LRU,"LRU"},
+  {ReplacementPolicy::RANDOM,"RANDOM"},
+  {ReplacementPolicy::LFU,"LFU"}
+};
+
+map<WritePolicy,string> getWritePolicy{
+  {WritePolicy::WT,"WT"},
+  {WritePolicy::WB,"WB"}
+};
 
 Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
    // check whether it belongs to same block or not
@@ -84,7 +95,7 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
    for(int i=0;i<n;i++){
       bitset<8> byte= b.blockdata[dataindex+i];
     for(int j=0 ; j<8;j++){
-      data[i]= byte[j];
+      data[i*8+j]= byte[j];
     }
    }
     return data;
@@ -216,6 +227,7 @@ void Cache:: writeDirtyBlocks(MemoryClass Memory) {
     for( int i=0;i<associativity;i++){
       if(it.second.set[i].dirtyBit){
         writeBlock(it.first,i,(it.second.set[i].tag*noOfEntries+it.first)*blocksize,Memory);
+        it.second.set[i].dirtyBit=false;
       }
     }
   }

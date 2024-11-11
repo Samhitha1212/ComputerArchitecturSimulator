@@ -8,7 +8,6 @@ using namespace std;
 bool configDetails(string filename){
   ifstream inputfile(filename);
   int counter = 0;
-  int cacheSize;
   string s;
   regex lru("\\s*[Ll][Rr][Uu]\\s*");
   regex lfu("\\s*[Ll][Ff][Uu]\\s*");

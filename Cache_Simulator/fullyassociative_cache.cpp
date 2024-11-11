@@ -69,7 +69,7 @@ bitset<64> FullAssociativeCache:: LoadDataFromCache(int n , unsigned int address
    for(int i=0;i<n;i++){
       bitset<8> byte= b.blockdata[dataindex+i];
     for(int j=0 ; j<8;j++){
-      data[i]= byte[j];
+      data[i*8+j]= byte[j];
     }
    }
     return data;
@@ -184,6 +184,7 @@ void FullAssociativeCache:: writeDirtyBlocks(MemoryClass Memory) {
   for(int i=0; i<cache.size();i++){
       if(cache[i].dirtyBit){
         writeBlock( i, cache[i].tag*blocksize , Memory );
+        cache[i].dirtyBit=false;
       }
    }
 }
