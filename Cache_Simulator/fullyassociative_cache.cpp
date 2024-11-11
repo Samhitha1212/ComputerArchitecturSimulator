@@ -2,6 +2,7 @@
 #include <random>
 #include <time.h>
 #include <iostream>
+#include <fstream>
 
 
 Hitdetails FullAssociativeCache:: HitOrMiss(unsigned int address,int n)const {
@@ -10,17 +11,17 @@ Hitdetails FullAssociativeCache:: HitOrMiss(unsigned int address,int n)const {
   unsigned int reqaddress2 = (address+n-1) / blocksize;
   if(reqaddress2 != reqaddress){
     cout<<"Memory access to cache is not in same block"<<endl;
-    return {false,false};
+    return {false,false, 0, 0};
   }
 
   unsigned int tag = reqaddress;
   for( unsigned int i=0;i<cache.size();i++){
     if(cache[i].validBit && cache[i].tag==tag){
-      return {true,true,i}; //hit
+      return {true,true,i, 0}; //hit
     }
   }
   //miss
-   return {false,true};
+   return {false,true, 0, 0};
 
 }
 Block FullAssociativeCache::getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer)const {
@@ -99,6 +100,11 @@ void FullAssociativeCache::writeBlock(unsigned int block_index, unsigned int sta
   }
 }
 
+bool FullAssociativeCache::IsDirtyBlock(unsigned int cache_index, unsigned int set_index){
+  bool dirty = cache[cache_index].dirtyBit;
+  return dirty;
+}
+
 unsigned int FullAssociativeCache:: FindIndexForReplacement()const {
 
   unsigned int k=0;
@@ -160,7 +166,19 @@ void FullAssociativeCache::InvalidateCacheEntries() {
     }
    }
     cache.clear();
+}
 
+bool FullAssociativeCache::dumpFile(string filename){
+  fstream outputfile(filename, ios::trunc | ios::in | ios::out);
+  if(outputfile.is_open()){
+    for(auto block: cache){
+      if(block.validBit){
+        outputfile<<"Set: 0x00"<<", Tag: 0x"<<hex<<block.tag<<", "<<(block.dirtyBit?"Dirty":"Clean")<<endl;
+      }
+    }
+    return true;
+  }
+  return false;
 }
 void FullAssociativeCache:: writeDirtyBlocks(MemoryClass Memory) {
   for(int i=0; i<cache.size();i++){

@@ -33,3 +33,6 @@ struct CacheStatastics{
 bitset<64> ReadData(int n, unsigned int address);
 void WriteData(int n,unsigned int  address, bitset<64> value);
 
+bool configDetails(string filename);
+void addrAccess(string filename, bool access, unsigned int address, unsigned  int set, bool IsHit, unsigned int tag, bool IsDirty);
+

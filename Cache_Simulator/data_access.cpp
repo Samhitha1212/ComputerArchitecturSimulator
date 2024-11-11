@@ -5,9 +5,10 @@
 
 using namespace std;
 
-
-
 bitset<64> ReadData(int n, unsigned int address) {
+    if(!IsCacheEnabled){
+      return Memory.ReadData(n, address);
+    }
     Hitdetails h = cache->HitOrMiss(address,n);
     if(!h.IsSingleblock){
       return Memory.ReadData(n,address);
@@ -31,12 +32,17 @@ bitset<64> ReadData(int n, unsigned int address) {
    //now read data from appropriate block and send bitset<64>
     if(cache->associativity){
       return cache->LoadDataFromCache(n,address,h.cache_index,h.set_index);
-      }else{
-       return cache->LoadDataFromCache(n,address,h.cache_index);
+    }else{
+      return cache->LoadDataFromCache(n,address,h.cache_index);
     }
+    addrAccess(out, 0, address, h.cache_index, h.IsHit, address/cache->blocksize, cache->IsDirtyBlock(h.cache_index, h.set_index));
   }
 
   void WriteData(int n, unsigned int address, bitset<64> value){
+    if(!IsCacheEnabled){
+      Memory.WriteData(n, address, value);
+      return;
+    }
     Hitdetails h = cache->HitOrMiss(address, n);
     unsigned int start_address= (address/cache->blocksize)*cache->blocksize;
     
@@ -83,6 +89,7 @@ bitset<64> ReadData(int n, unsigned int address) {
     else{
       Memory.WriteData(n, address, value);
     }
+    addrAccess(out, 0, address, h.cache_index, h.IsHit, address/cache->blocksize, cache->IsDirtyBlock(h.cache_index, h.set_index));
   }
 
 

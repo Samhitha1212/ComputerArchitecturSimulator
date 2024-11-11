@@ -79,9 +79,12 @@ class CacheInterface{
 
   virtual void InvalidateCacheEntries()=0;
   virtual void writeDirtyBlocks(MemoryClass Memory)=0;
+  virtual bool dumpFile(string filename) = 0;
 
   void PrintCacheConfig();
   unsigned int CacheSize();
+
+  virtual bool IsDirtyBlock(unsigned int cache_index, unsigned int set_index) = 0;
 };
 
 class Cache :public CacheInterface {
@@ -118,6 +121,8 @@ public:
   void writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass Memory)override;
   void InvalidateCacheEntries() override;
   void writeDirtyBlocks(MemoryClass Memory) override;
+  bool dumpFile(string filename) override;
+  bool IsDirtyBlock(unsigned int cache_index, unsigned int set_index) override;
 };
 
 class FullAssociativeCache: public CacheInterface{
@@ -146,6 +151,8 @@ class FullAssociativeCache: public CacheInterface{
     void writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass Memory)override;
     void InvalidateCacheEntries() override;
     void writeDirtyBlocks(MemoryClass Memory) override;
+    bool dumpFile(string filename) override;
+    bool IsDirtyBlock(unsigned int cache_index, unsigned int set_index) override; 
 };
 
 

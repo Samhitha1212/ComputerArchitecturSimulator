@@ -2,6 +2,8 @@
 #include "Execution.h"
 #include "operation_map.h"
 #include "ErrorHandling.h"
+#include "cache.h"
+#include "cache_related.h"
 #include <iostream>
 #include <string>
 #include<regex>
@@ -10,11 +12,13 @@ using namespace std;
 
 int main(){
   string input;
-  regex cache_enable("cache_sim\\s+enable\\s+config.txt\\s*");
+  regex cache_enable("cache_sim\\s+enable\\s+(.*)\\s*");
+  smatch match_cacheConfig;
   regex cache_disable("cache_sim\\s+disable\\s*");
   regex cache_status("cache_sim\\s+status\\s*");
   regex cache_invalid("cache_sim\\s+invalidate\\s*");
-  regex cache_dump("cache_sim\\s+dump\\s+myFile.out\\s*");
+  regex cache_dump("cache_sim\\s+dump\\s+(.*)\\s*");
+  smatch match_cacheDump;
   regex cache_statistics("cache_sim\\s+stats\\s*");
   regex load("load\\s+(.*)");
   smatch match;
@@ -28,13 +32,48 @@ int main(){
   regex show_mem("\\s*show\\s+memory\\s*");
   regex show_break("\\s*show\\s+breakpoints\\s*");
   regex exit("\\s*exit\\s*");
+  string out_file;
 
   do{
     getline(cin, input);
-    if(regex_match(input, cache_enable)){
-      IsCacheEnabled = 1;
+    if(regex_match(input, match_cacheConfig, cache_enable)){
+      IsCacheEnabled = configDetails(match_cacheConfig[1]);
+      if(!IsCacheEnabled){
+        cout<<"ERROR in opening the file "<< match_cacheConfig[1]<<". So cache is not enabled"<<endl;
+      }
     }
-    else{
+
+    else if(regex_match(input, cache_statistics)){
+      if(IsFileloaded){
+        if(IsCacheEnabled){
+          cacheStatastics.Print();
+        }
+        else{
+          cout<<"Cache is not enabled"<<endl;
+        }
+      }
+    }
+
+    else if(regex_match(input, cache_status)){
+      if(IsCacheEnabled){
+        cache->PrintCacheConfig();
+      }
+    }
+
+    else if(regex_match(input, cache_invalid)){
+      if(IsCacheEnabled){
+        cache->InvalidateCacheEntries();
+      }
+    }
+
+    else if(regex_match(input, match_cacheDump, cache_dump)){
+      if(IsCacheEnabled){
+
+      }
+    }
+
+
+
       if(regex_match(input, match, load)){
         InitializeTotalData();
         if(loadfile(match[1])){
@@ -43,6 +82,18 @@ int main(){
         }
         else{
           IsFileloaded = true;
+          out_file.clear();
+          string s = match[1];
+          for(int i=0; i<s.length(); i++){
+            if(s[i] != '.'){
+              out_file += s[i];
+            }
+            else{
+              break;
+            }
+          }
+          out_file += ".output";
+          output_file = out_file;
           functionStack.back().line=LineNumber[0]-1;
         }
         cout<<endl;
@@ -189,18 +240,17 @@ int main(){
         cout<<endl;
       }
       else if(input=="cache"){
-        cache=new Cache(1024,1,16,ReplacementPolicy::FIFO, WritePolicy::WT,false);
+        cache = new Cache(1024,1,16,ReplacementPolicy::FIFO, WritePolicy::WT,false);
         cout<<cache->blocksize<<endl;
         cout<<cache->associativity<<endl;
         cout<<cache->noOfEntries<<endl;
       }else if(input=="cache_stats"){
-      cacheStatastics.Print();
+        cacheStatastics.Print();
       }
       else if(!regex_match(input, exit)){
         cout<<"Invalid command"<<endl;
         cout<<endl;
       }
-    }
   }while(!regex_match(input, exit));
 
   cout<<"Exited the simulator"<<endl;

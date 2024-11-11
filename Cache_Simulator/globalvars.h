@@ -10,6 +10,7 @@
 #include "cache_related.h"
 #define N 100
 
+extern string output_file;
 extern RegisterFileClass RegisterFile;
 extern MemoryClass Memory;
 extern CacheInterface* cache;

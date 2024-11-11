@@ -1,7 +1,9 @@
 #include "cache.h"
 #include <random>
 #include <time.h>
+#include<fstream>
 #include <iostream>
+#include "memory.h"
 
 using namespace std;
 
@@ -194,6 +196,21 @@ void Cache::InvalidateCacheEntries() {
 
 }
 
+bool Cache::dumpFile(string filename){
+  fstream outputfile(filename, ios::trunc | ios::in | ios::out);
+  if(outputfile.is_open()){
+    for(auto it: cache){
+      for(int i=0; i<associativity; i++){
+        if(it.second.set[i].validBit){
+          outputfile<<"Set: 0x"<<hex<<it.first<<", Tag: 0x"<<hex<<it.second.set[i].tag<<","<<(it.second.set[i].dirtyBit?"Dirty":"Clean")<<endl;
+        } 
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
 void Cache:: writeDirtyBlocks(MemoryClass Memory) {
   for( auto it: cache){
     for( int i=0;i<associativity;i++){
@@ -202,6 +219,11 @@ void Cache:: writeDirtyBlocks(MemoryClass Memory) {
       }
     }
   }
+}
+
+bool Cache::IsDirtyBlock(unsigned int cache_index, unsigned int set_index){
+  bool dirty = cache[cache_index].set[set_index].dirtyBit;
+  return dirty;
 }
 
 unsigned int CacheInterface::CacheSize(){
