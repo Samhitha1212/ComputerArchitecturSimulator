@@ -47,7 +47,7 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
 
 }
 
-  Block Cache:: getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer) const{
+  Block Cache:: getBlock(unsigned int address, MemoryClass& Memory,unsigned int Timer) const{
     Block b(blocksize);
     b.tag=(address/blocksize)/noOfEntries;
     b.validBit=true;
@@ -62,7 +62,7 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
     return b;
   }
 
-  unsigned int Cache::AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer ){ //miss
+  unsigned int Cache::AddEntry(unsigned int address ,MemoryClass& Memory, unsigned int Timer ){ //miss
    // index=address<<offset % no_of_entries
    unsigned int reqaddress=(address/blocksize);
    unsigned int index= reqaddress%noOfEntries;
@@ -76,7 +76,7 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
   unsigned int set_index = FindIndexForReplacement(index);
   Block victim = cache[index].set[set_index];
   if(victim.dirtyBit){
-    writeBlock(index, set_index, reqaddress*blocksize, Memory);
+    writeBlock(index, set_index, (victim.tag*noOfEntries+index)*blocksize, Memory);
   }
   if( victim.validBit){
      delete [] victim.blockdata;
@@ -156,9 +156,9 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
 
   void Cache::writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int cache_index, unsigned int set_index){
    Block b=cache[cache_index].set[set_index];
-    for(int i =0; i<n; i++){
+    for(int i = 0; i<n; i++){
       for(int j=0; j<8; j++){
-        b.blockdata[i+address%blocksize][j] = value[j];
+        b.blockdata[i+address%blocksize][j] = value[i*8+j];
       }
     }
 
@@ -172,10 +172,10 @@ Hitdetails Cache::HitOrMiss(unsigned int address,int n)const{
     cache[cache_index].set[set_index].accessDetails.frequency++;
   }
 
-  void Cache::writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass Memory){
+  void Cache::writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass& Memory){
     Block b = cache[cache_index].set[set_index];
     for(int i=0; i<blocksize; i++){
-      Memory.WriteByte(start_address, b.blockdata[i]);
+      Memory.WriteByte(start_address+i, b.blockdata[i]);
     }
   }
 
@@ -213,7 +213,7 @@ bool Cache::dumpFile(string filename){
     for(auto it: cache){
       for(int i=0; i<associativity; i++){
         if(it.second.set[i].validBit){
-          outputfile<<"Set: 0x"<<hex<<it.first<<", Tag: 0x"<<hex<<it.second.set[i].tag<<","<<(it.second.set[i].dirtyBit?"Dirty":"Clean")<<endl;
+          outputfile<<"Set: 0x"<<hex<<it.first<<", Tag: 0x"<<hex<<it.second.set[i].tag<<", "<<(it.second.set[i].dirtyBit?"Dirty":"Clean")<<endl;
         } 
       }
     }
@@ -222,7 +222,7 @@ bool Cache::dumpFile(string filename){
   return false;
 }
 
-void Cache:: writeDirtyBlocks(MemoryClass Memory) {
+void Cache:: writeDirtyBlocks(MemoryClass& Memory) {
   for( auto it: cache){
     for( int i=0;i<associativity;i++){
       if(it.second.set[i].dirtyBit){

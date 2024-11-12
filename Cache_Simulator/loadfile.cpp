@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 #include "globalvars.h"
-
+#include "math.h"
 using namespace std;
 
 bool loadfile( string filename){
@@ -121,16 +121,60 @@ bool loadfile( string filename){
                 }while (i < s.length() && s[i] != ' ' && s[i] != ',' && s[i] != ';' );
                 if(temp != ""){
                   if(IsValidImmediate(temp,true)){
-                  
-                  long int num = convertToInt(temp);
-                  if(valid_imm(num,nb*8,false)){
+                  try{
+                    unsigned long long int num ;
+                   long int num2;
+                   bool IsInrange=true;
+                    if (temp[0] == '0' && temp[1] == 'x' ) {
+                      num= stoull(temp, 0, 16);
+                      if(nb!= 8){
+                         unsigned long int t= pow(2,nb*8);
+                         if(num > t-1){
+                             IsInrange=false;
+                         }
+                      }
+                    } else if ( temp[0]=='-' && temp[1] == '0' && temp[2] == 'x') {
+                      num2= stoll(temp, 0, 16);
+                      num=num2;
+                      if(nb!= 8){
+                         unsigned long int t= pow(2,nb*8-1);
+                         if(num < -t){
+                             IsInrange=false;
+                         }
+                      }
+
+                    } else if(temp[0]=='-'){
+                      num2= stoll(temp);
+                      num=num2;
+                      if(nb!= 8){
+                         unsigned long int t= pow(2,nb*8-1);
+                         if(num < -t){
+                             IsInrange=false;
+                         }
+                      }
+                    }else{
+                      num= stoull(temp);
+                      if(nb!= 8){
+                         unsigned long int t= pow(2,nb*8);
+                         if(num > t-1){
+                             IsInrange=false;
+                         }
+                      }
+                    }
+                  if(IsInrange){
                      Memory.writeData(nb,num);
                   }else{
                   error=true;
-                  cout<<"Error: At line number :"<<dec<<linenumber<<"The immediate "<<temp<<" does not fit in "<<dec<<nb<<" bytes."<<endl;
+                  cout<<"Error: At line number "<<dec<<linenumber<<" :The immediate "<<temp<<" does not fit in "<<dec<<nb<<" bytes."<<endl;
                   break;
                   }
-                 
+
+                  }catch(const std::out_of_range& e){
+                    error=true;
+                    cout<<"Error: At line number "<<dec<<linenumber<<" :The immediate "<<temp<<" does not fit in "<<dec<<nb<<" bytes."<<endl;
+                    break;
+                  }
+                   
                   }else{
                     error=true;
                     cout<<"Error: At line number :"<<dec<<linenumber<<" Invalid Immediate format"<<endl;

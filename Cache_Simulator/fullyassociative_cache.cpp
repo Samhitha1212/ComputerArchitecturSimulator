@@ -24,7 +24,7 @@ Hitdetails FullAssociativeCache:: HitOrMiss(unsigned int address,int n)const {
    return {false,true, 0, 0};
 
 }
-Block FullAssociativeCache::getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer)const {
+Block FullAssociativeCache::getBlock(unsigned int address, MemoryClass& Memory,unsigned int Timer)const {
     Block b(blocksize);
     b.tag=(address/blocksize);
     b.validBit=true;
@@ -39,7 +39,7 @@ Block FullAssociativeCache::getBlock(unsigned int address, MemoryClass Memory,un
     return b;
 
 }
-unsigned int FullAssociativeCache:: AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer ) {
+unsigned int FullAssociativeCache:: AddEntry(unsigned int address ,MemoryClass& Memory, unsigned int Timer ) {
   unsigned int tag=(address/blocksize);
   Block b=getBlock(tag*blocksize,Memory,Timer);
 
@@ -51,7 +51,7 @@ unsigned int FullAssociativeCache:: AddEntry(unsigned int address ,MemoryClass M
     block_index=FindIndexForReplacement();
     Block victim = cache[block_index];
     if(victim.dirtyBit){
-      writeBlock(block_index, tag*blocksize, Memory);
+      writeBlock(block_index, victim.tag*blocksize, Memory);
     }
     if( victim.validBit){
      delete [] victim.blockdata;
@@ -79,7 +79,7 @@ void FullAssociativeCache:: writeDataToCache(int n, unsigned int address, bitset
   Block b = cache[block_index];
   for(int i =0; i<n; i++){
     for(int j=0; j<8; j++){
-      b.blockdata[i+address%blocksize][j] = value[j];
+      b.blockdata[i+address%blocksize][j] = value[8*i+j];
     }
   }
 
@@ -93,10 +93,10 @@ void FullAssociativeCache::updateDetails(unsigned int block_index, unsigned int 
   cache[block_index].accessDetails.last_access = Timer;
 }
 
-void FullAssociativeCache::writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass Memory){
+void FullAssociativeCache::writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass& Memory){
   Block b = cache[block_index];
   for(int i=0; i<blocksize; i++){
-    Memory.WriteByte(start_address, b.blockdata[i]);
+    Memory.WriteByte(start_address+i, b.blockdata[i]);
   }
 }
 
@@ -180,7 +180,7 @@ bool FullAssociativeCache::dumpFile(string filename){
   }
   return false;
 }
-void FullAssociativeCache:: writeDirtyBlocks(MemoryClass Memory) {
+void FullAssociativeCache:: writeDirtyBlocks(MemoryClass& Memory) {
   for(int i=0; i<cache.size();i++){
       if(cache[i].dirtyBit){
         writeBlock( i, cache[i].tag*blocksize , Memory );

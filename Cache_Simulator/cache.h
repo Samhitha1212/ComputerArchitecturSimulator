@@ -60,19 +60,19 @@ class CacheInterface{
   virtual ~CacheInterface(){}
 
   virtual Hitdetails HitOrMiss(unsigned int address,int n) const=0;
-  virtual Block getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer)const=0;
-  virtual unsigned int AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer )=0;
+  virtual Block getBlock(unsigned int address, MemoryClass& Memory,unsigned int Timer)const=0;
+  virtual unsigned int AddEntry(unsigned int address ,MemoryClass& Memory, unsigned int Timer )=0;
   virtual bitset<64> LoadDataFromCache(int n , unsigned int address ,unsigned int cache_index , unsigned char set_index ) const {return 0;};
   virtual bitset<64> LoadDataFromCache(int n , unsigned int address ,unsigned int block_index ) const{return 0;} ;
   virtual void writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int cache_index, unsigned int set_index){};
   virtual void writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int block_index){};
   virtual void updateDetails(unsigned int cache_index, unsigned int set_index, unsigned int Timer){};
   virtual void updateDetails(unsigned int cache_index, unsigned int Timer){};
-  virtual void writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass Memory){};
-  virtual void writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass Memory){};
+  virtual void writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass& Memory){};
+  virtual void writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass& Memory){};
 
   virtual void InvalidateCacheEntries()=0;
-  virtual void writeDirtyBlocks(MemoryClass Memory)=0;
+  virtual void writeDirtyBlocks(MemoryClass& Memory)=0;
   virtual bool dumpFile(string filename) = 0;
 
   void PrintCacheConfig();
@@ -106,15 +106,15 @@ public:
       }
 
   Hitdetails HitOrMiss(unsigned int address,int n)const override;
-  Block getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer)const override;
-  unsigned int AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer ) override;
+  Block getBlock(unsigned int address, MemoryClass& Memory,unsigned int Timer)const override;
+  unsigned int AddEntry(unsigned int address ,MemoryClass& Memory, unsigned int Timer ) override;
   bitset<64> LoadDataFromCache(int n , unsigned int address ,unsigned int cache_index , unsigned char set_index )const override;
   void writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int cache_index, unsigned int set_index) override;
   unsigned int FindIndexForReplacement(unsigned int cache_index)const ;
   void updateDetails(unsigned int cache_index, unsigned int set_index, unsigned int Timer)override;
-  void writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass Memory)override;
+  void writeBlock(unsigned int cache_index,  unsigned int set_index, unsigned int start_address, MemoryClass& Memory)override;
   void InvalidateCacheEntries() override;
-  void writeDirtyBlocks(MemoryClass Memory) override;
+  void writeDirtyBlocks(MemoryClass& Memory) override;
   bool dumpFile(string filename) override;
   bool IsDirtyBlock(unsigned int cache_index, unsigned int set_index) override;
 };
@@ -136,15 +136,15 @@ class FullAssociativeCache: public CacheInterface{
       }
     
     Hitdetails HitOrMiss(unsigned int address,int n)const override;
-    Block getBlock(unsigned int address, MemoryClass Memory,unsigned int Timer)const override;
-    unsigned int AddEntry(unsigned int address ,MemoryClass Memory, unsigned int Timer ) override;
+    Block getBlock(unsigned int address, MemoryClass& Memory,unsigned int Timer)const override;
+    unsigned int AddEntry(unsigned int address ,MemoryClass& Memory, unsigned int Timer ) override;
     bitset<64> LoadDataFromCache(int n , unsigned int address ,unsigned int block_index ) const override;
     void writeDataToCache(int n, unsigned int address, bitset<64> value, unsigned int block_index)override;
     unsigned int FindIndexForReplacement()const ;
     void updateDetails(unsigned int cache_index, unsigned int Timer)override;
-    void writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass Memory)override;
+    void writeBlock(unsigned int block_index, unsigned int start_address, MemoryClass& Memory)override;
     void InvalidateCacheEntries() override;
-    void writeDirtyBlocks(MemoryClass Memory) override;
+    void writeDirtyBlocks(MemoryClass& Memory) override;
     bool dumpFile(string filename) override;
     bool IsDirtyBlock(unsigned int cache_index, unsigned int set_index) override; 
 };

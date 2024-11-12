@@ -77,6 +77,7 @@ int main(){
       }
     }else if(regex_match(input,cache_disable)){
       if(IsCacheEnabled ){
+          cache->writeDirtyBlocks(Memory);
           cache->InvalidateCacheEntries();
           cache =nullptr;
           IsCacheEnabled=false;
@@ -251,14 +252,6 @@ int main(){
         }
         cout<<endl;
       }
-      // else if(input=="cache"){
-      //   cache = new Cache(1024,1,16,ReplacementPolicy::FIFO, WritePolicy::WT,false);
-      //   cout<<cache->blocksize<<endl;
-      //   cout<<cache->associativity<<endl;
-      //   cout<<cache->noOfEntries<<endl;
-      // }else if(input=="cache_stats"){
-      //   cacheStatastics.Print();
-      // }
       else if(!regex_match(input, exit)){
         cout<<"Invalid command"<<endl;
         cout<<endl;

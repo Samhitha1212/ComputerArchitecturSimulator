@@ -29,7 +29,7 @@ struct CacheStatastics{
   }
 
   void Print(){
-    std::cout.precision(4);
+    std::cout.precision(2);
     std::cout<<"D-cache statistics: Accesses="<<dec<<Accesses()<<dec<<", Hit="<<dec<<hits<<dec<<", Miss="<<dec<<misses;
     if(Accesses()){
      cout<<", Hit Rate="<<hitRate();
